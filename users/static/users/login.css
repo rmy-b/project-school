@@ -1,0 +1,159 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f3f3f3;
+}
+
+.main-container {
+    width: 65%;
+    height: 85vh;
+    margin: 40px auto;
+    display: flex;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+/* LEFT PANEL */
+.left-panel {
+    width: 45%;
+    background: #c88400;
+    color: white;
+    padding: 60px;
+    position: relative;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: bold;
+}
+
+.logo {
+    width: 25px;
+    filter: invert(1);
+}
+
+.left-panel h1 {
+    margin-top: 80px;
+    font-size: 40px;
+}
+
+.description {
+    margin-top: 20px;
+    line-height: 1.6;
+    max-width: 400px;
+}
+
+.quote {
+    position: absolute;
+    bottom: 40px;
+    background: rgba(255,255,255,0.2);
+    padding: 20px;
+    border-radius: 10px;
+    width: 75%;
+}
+
+/* RIGHT PANEL */
+.right-panel {
+    width: 55%;
+    background: #f9f9f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-card {
+    width: 380px;
+}
+
+.sub-text {
+    font-size: 14px;
+    color: #666;
+}
+
+/* ROLE BOXES */
+.roles {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.role-box {
+    flex: 1;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 18px 10px;
+    cursor: pointer;
+    transition: 0.3s;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.role-box img {
+    width: 25px;
+    margin-bottom: 5px;
+}
+
+.role-box:hover {
+    border: 2px solid #c88400;
+}
+
+.role-box.active {
+    border: 2px solid #c88400;
+    background: #fff7e6;
+}
+
+/* INPUTS */
+.input-group {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 15px;
+    background: white;
+}
+
+.input-group img {
+    width: 18px;
+    margin-right: 10px;
+}
+
+.input-group input {
+    border: none;
+    outline: none;
+    flex: 1;
+}
+
+/* BUTTON */
+.login-btn {
+    width: 100%;
+    padding: 12px;
+    background: #c88400;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.login-btn:hover {
+    background: #a96e00;
+}
+
+.error {
+    color: red;
+    margin-top: 10px;
+}
+
+.forgot {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 13px;
+}
