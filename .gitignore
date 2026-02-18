@@ -9,6 +9,8 @@ staticfiles/
 
 # Virtual Environment
 ENV/
+virenv/
+
 
 # VS Code
 .vscode/
