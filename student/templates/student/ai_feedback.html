@@ -1,0 +1,83 @@
+{% extends "student/layout.html" %}
+{% load static %}
+{% block student_content %}
+
+<link rel="stylesheet" href="{% static 'student/css/ai_feedback.css' %}">
+
+<div class="ai-wrapper">
+
+    <div class="ai-header">
+        <h2>AI Feedback & Guidance</h2>
+        <p>Personalized academic recommendations powered by AI</p>
+    </div>
+
+    <!-- ================= 4 CARDS ================= -->
+    <div class="cards-grid">
+
+        <div class="ai-card">
+            <div class="card-title">Strong Subject</div>
+            {% if strong_subject %}
+                <div class="card-content">
+                    {{ strong_subject.subject.subject_name }}
+                    ({{ strong_subject.total_marks }})
+                </div>
+                <div class="card-sub">
+                    Keep up the excellent work!
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="ai-card">
+            <div class="card-title">Focus Area</div>
+            {% if weak_subject %}
+                <div class="card-content">
+                    {{ weak_subject.subject.subject_name }}
+                    ({{ weak_subject.total_marks }})
+                </div>
+                <div class="card-sub">
+                    Needs more attention.
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="ai-card">
+            <div class="card-title">Study Plan</div>
+            <div class="card-content">
+                {{ study_plan_text }}
+            </div>
+        </div>
+
+        <div class="ai-card">
+            <div class="card-title">Prediction</div>
+            <div class="card-content">
+                {{ prediction }}
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ================= CHAT SECTION ================= -->
+    <div class="chat-section">
+
+        <div class="chat-box" id="chat-box">
+
+            <div class="message bot">
+                Hello 👋  
+                How are your marks this semester?
+            </div>
+
+            <div class="options">
+                <button onclick="sendMessage('analyze')" class="primary-btn">
+                    Analyze My Performance
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="{% static 'student/js/ai_feedback.js' %}"></script>
+
+{% endblock %}
