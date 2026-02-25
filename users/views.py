@@ -46,11 +46,11 @@ def admin_dashboard(request):
     return HttpResponse('<h2>Welcome Admin</h2><a href="/logout/">Logout</a>')
 
 
-@login_required
-def faculty_dashboard(request):
-    if request.user.role != "faculty":
-        return redirect("login")
-    return HttpResponse('<h2>Welcome Faculty</h2><a href="/logout/">Logout</a>')
+# @login_required
+# def faculty_dashboard(request):
+#     if request.user.role != "faculty":
+#         return redirect("login")
+#     return HttpResponse('<h2>Welcome Faculty</h2><a href="/logout/">Logout</a>')
 
 
 @login_required

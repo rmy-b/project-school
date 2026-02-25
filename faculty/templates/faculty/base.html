@@ -1,0 +1,86 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Faculty</title>
+
+    <!-- BASE CSS -->
+    <link rel="stylesheet" href="{% static 'faculty/css/base.css' %}">
+    
+    <!-- PAGE CSS -->
+    <link rel="stylesheet" href="{% static 'faculty/css/dashboard.css' %}">
+    {% block page_css %}{% endblock %}
+</head>
+<body>
+
+<div class="app-container">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-top">
+            <h2>SPM System</h2>
+            <p class="subtitle">Faculty Portal</p>
+
+            <ul>
+                <li class="{% if request.resolver_match.url_name == 'faculty_dashboard' %}active{% endif %}">
+                    <a href="{% url 'faculty_dashboard' %}">
+                        <img src="{% static 'faculty/icons/dashboard.svg' %}" class="icon"> Dashboard
+                    </a>
+                </li>
+
+                <li class="{% if request.resolver_match.url_name == 'marks_page' %}active{% endif %}">
+                    <a href="{% url 'marks_page' %}">
+                        <img src="{% static 'faculty/icons/marks.svg' %}" class="icon"> Marks
+                    </a>
+                </li>
+
+                <li class="{% if request.resolver_match.url_name == 'attendance_page' %}active{% endif %}">
+                    <a href="{% url 'attendance_page' %}">
+                        <img src="{% static 'faculty/icons/calendar-black.svg' %}" class="icon"> Attendance
+                    </a>
+                </li>
+
+                <li>
+                    <img src="{% static 'faculty/icons/chart-line black.svg' %}" class="icon"> Performance
+                </li>
+            </ul>
+        </div>
+
+        <!-- PROFILE -->
+        <div class="sidebar-profile">
+            <p><b>{{ faculty.name }}</b></p>
+            <p>faculty</p>
+        </div>
+
+        <!-- LOGOUT -->
+        <div class="sidebar-bottom">
+            <form method="POST" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button class="logout-btn"><img src="{% static 'faculty/icons/log-out.svg' %}" height="20" >Logout</button>
+            </form>
+        </div>
+    </aside>
+
+    <!-- Main -->
+    <div class="main-content">
+
+        <!-- HEADER -->
+        <div class="header">
+            <button id="toggleBtn">
+                <img src="{% static 'faculty/icons/panel-left.svg' %}">
+            </button>
+        </div>
+
+        <!-- PAGE CONTENT -->
+        <div class="page-content">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+</div>
+
+<script src="{% static 'faculty/js/dashboard.js' %}"></script>
+{% block page_js %}{% endblock %}
+</body>
+</html>

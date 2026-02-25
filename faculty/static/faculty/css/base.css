@@ -1,0 +1,152 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+}
+
+/* LAYOUT */
+.app-container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* ================= SIDEBAR ================= */
+.sidebar {
+    width: 260px;
+    background: linear-gradient(180deg, #2d241b, #1c1410);
+    color: white;
+    display: flex;
+    flex-direction: column;
+}
+
+/* TOP */
+.sidebar-top {
+    padding: 20px;
+}
+
+.sidebar-top h2 {
+    font-size: 20px;
+}
+
+.subtitle {
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+/* MENU */
+.sidebar ul {
+    list-style: none;
+    margin-top: 20px;
+}
+
+.sidebar ul li {
+    padding: 12px 14px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+}
+
+.sidebar ul li a,
+.sidebar ul li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.sidebar ul li.active,
+.sidebar ul li:hover {
+    background: #c8870a;
+}
+
+.sidebar.hide{
+    display: none;
+}
+
+
+.icon {
+    width: 18px;
+    filter: brightness(0) invert(1);
+}
+
+/* PROFILE */
+.sidebar-profile {
+    margin-top: auto;
+    padding: 15px;
+    border-top: 1px solid rgba(255,255,255,0.15);
+    font-size: 14px;
+}
+
+/* LOGOUT */
+.sidebar-bottom {
+    padding: 15px;
+}
+
+.logout-btn {
+    width: 100%;
+    padding: 10px 14px;
+    background: #2a1b14;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    
+}
+
+.logout-btn:hover {
+    background: #a32020;
+}
+
+/* ================= MAIN ================= */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0px;
+    background: #faf7f2;
+}
+
+/* HEADER (NO GAP, TOUCHES SIDEBAR & TOP) */
+.header {
+    height:60px;
+    width: 100%;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    padding: 0px;
+    border-bottom: 1px solid #ddd;
+    flex-shrink: 0;
+    margin: 0;
+ 
+ }
+
+/* BUTTON */
+#toggleBtn {
+    background: none;
+    border: none;
+    cursor: pointer;
+   
+}
+
+/* PAGE BODY */
+.page-content {
+    flex: 1;
+    padding: 25px 40px;
+    overflow-y: auto;
+    background: #faf7f2;
+   
+}

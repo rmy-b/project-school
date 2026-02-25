@@ -1,0 +1,54 @@
+{% extends 'faculty/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="faculty-card">
+    <div class = initial>
+    <div class="avatar">{{ faculty.name|first }}</div></div>
+    <div>
+        <h3>{{ faculty.name }}</h3>
+        {% if incharge %}
+            <p>Class: {{ incharge.class_obj.class_name }}</p>
+            <p>Section: {{ incharge.section.section_name }}</p>
+            <span class="badge">Class Teacher</span>
+        {% endif %}
+    </div>
+</div>
+
+<h2>Classes Handled</h2>
+<div class="classes">
+    {% for c in classes_handled %}
+    <div class="class-box">
+        <img src="{% static 'faculty/icons/users.svg' %}" class="card-icon">
+        <b>{{ c.class_obj__class_name }} - {{ c.section__section_name }}</b>
+        <p>{{ c.subject__subject_name }}</p>
+    </div>
+    {% endfor %}
+</div>
+
+<h2>Quick Actions</h2>
+<div class="actions">
+    <div class="action-card">
+        <img src="{% static 'faculty/icons/clipboard-list.svg' %}" class="card-icon">
+        <h3>Marks</h3>
+        <a href="{% url 'marks_page' %}">
+            <button>Enter Marks</button>
+        </a>
+    </div>
+
+    <div class="action-card">
+        <img src="{% static 'faculty/icons/calendar.svg' %}" class="card-icon">
+        <h3>Attendance</h3>
+        <a href="{% url 'attendance_page' %}">
+        <button>Mark Attendance</button></a>
+    </div>
+
+    <div class="action-card">
+        <img src="{% static 'faculty/icons/chart-line.svg' %}" class="card-icon">
+        <h3>Performance</h3>
+        <button>View Reports</button>
+    </div>
+</div>
+
+{% endblock %}

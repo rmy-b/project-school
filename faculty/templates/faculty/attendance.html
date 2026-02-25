@@ -1,0 +1,128 @@
+{% extends 'faculty/base.html' %}
+{% load static %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{% static 'faculty/css/attendance.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<h2>Attendance</h2>
+<p>View and mark student attendance</p>
+
+{% if not_authorized %}
+    <div class="not-allowed">
+        You are not authorized to mark attendance
+    </div>
+{% else %}
+
+<!-- Assigned class -->
+<div class="assigned-box">
+    <div>
+        <strong>Assigned Class</strong><br>
+        {{ class_obj.class_name }} - {{ section.section_name }}
+    </div>
+    <button id="openModal" class="mark-btn">Mark Attendance</button>
+</div>
+
+<!-- Students list -->
+<table class="attendance-table">
+    <thead>
+        <tr>
+            <th>Roll No</th>
+            <th>Name</th>
+            <th>Attendance %</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in attendance_data %}
+        <tr>
+            <td>{{ row.student.roll_no }}</td>
+            <td>{{ row.student.name }}</td>
+            <td>
+                {% if row.status %}
+                    <span class="badge green">Present</span>
+                {% else %}
+                    <span class="badge red">Absent</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- MODAL -->
+<div id="attendanceModal" class="modal">
+    <div class="modal-content">
+        <span id="closeModal" class="close">&times;</span>
+
+        <h3>Mark Attendance - {{ class_obj.class_name }} {{ section.section_name }}</h3>
+
+       {% if error_message %}
+<div class="error-msg">{{ error_message }}</div>
+{% endif %}
+
+<div class="summary">
+    <div class="card total">
+        <span>Total</span>
+        <strong>{{ total_count }}</strong>
+    </div>
+    <div class="card present">
+        <span>Present</span>
+        <strong>{{ present_count }}</strong>
+    </div>
+    <div class="card absent">
+        <span>Absent</span>
+        <strong>{{ absent_count }}</strong>
+    </div>
+</div>
+        <form method="post">
+            {% csrf_token %}
+
+            <label>Date</label>
+            <input type="date" name="date" value="{{ selected_date }}">
+
+            <table class="modal-table">
+                <thead>
+                    <tr>
+                        <th>Roll No</th>
+                        <th>Name</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in attendance_data %}
+                    <tr>
+                        <td>{{ row.student.roll_no }}</td>
+                        <td>{{ row.student.name }}</td>
+                  <td>
+    <div class="toggle-wrapper">
+        <span class="status-text">
+            {% if row.status == "P" %}Present{% else %}Absent{% endif %}
+        </span>
+
+        <label class="toggle">
+            <input type="checkbox"
+                   name="present_{{ row.student.id }}"
+                   {% if row.status == "P" %}checked{% endif %}>
+            <span class="slider"></span>
+        </label>
+    </div>
+</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <button type="submit" class="save-btn">Save Attendance</button>
+        </form>
+    </div>
+</div>
+
+{% endif %}
+
+{% endblock %}
+
+{% block page_js %}
+<script src="{% static 'faculty/js/attendance.js' %}"></script>
+{% endblock %}

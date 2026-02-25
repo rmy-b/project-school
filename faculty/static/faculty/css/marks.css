@@ -1,0 +1,102 @@
+h2 {
+    margin-bottom: 5px;
+}
+
+p {
+    margin-bottom: 15px;
+    color: #666;
+}
+
+.filter {
+    margin: 15px 0 20px 0;
+}
+
+.filter form {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.filter label {
+    font-weight: 500;
+}
+
+.filter select {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    outline: none;
+    background: white;
+}
+
+/* TABLE */
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+/* HEADER */
+thead th {
+    background: #f4f1ec;
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    border-radius: 8px;
+}
+
+/* ROW */
+tbody tr {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+}
+
+tbody tr td {
+    padding: 12px;
+}
+
+/* INPUTS */
+.mark-input {
+    width: 60px;
+    padding: 4px 6px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+/* TOTAL */
+.total {
+    color: green;
+    font-weight: bold;
+}
+
+/* ACTION ICON */
+.action-btn {
+    background: none;
+    border: none;
+}
+
+.action-btn img {
+    width: 10px;
+    height: 10px;
+}
+
+/* UPDATE BUTTON */
+.update-btn {
+    margin-top: 15px;
+    background: #c8870a;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.update-btn:hover {
+    opacity: 0.9;
+}
+.edit-btn{
+    background: none;
+}

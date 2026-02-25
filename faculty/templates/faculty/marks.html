@@ -1,0 +1,108 @@
+{% extends 'faculty/base.html' %}
+{% load static %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{% static 'faculty/css/marks.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<h2>Manage Marks</h2>
+<p>Enter and update student marks</p>
+
+<div class="filter">
+   <form method="get">
+     <label>Select Class</label>
+    <select name="class" onchange="this.form.submit()">
+        <option value="">Select Class</option>
+        {% for a in assignments %}
+        <option value="{{ a.class_obj.id }}"
+            {% if a.class_obj.id|stringformat:"s" == selected_class_id|stringformat:"s" %}
+                selected
+            {% endif %}
+        >
+            {{ a.class_obj.class_name }} - {{ a.section.section_name }}
+        </option>
+        {% endfor %}
+    </select>
+
+    <label>Select Exam</label>
+    <select name="exam" onchange="this.form.submit()">
+        <option value="">-- Select Exam --</option>
+        {% for exam in exams %}
+            <option value="{{ exam.id }}" {% if exam.id|stringformat:"s" == selected_exam_id %}selected{% endif %}>
+                {{ exam.exam_name }}
+            </option>
+        {% endfor %}
+    </select>
+</form>
+</div>
+
+
+<form method="post">
+{% csrf_token %}
+
+<!-- IMPORTANT: names must match backend -->
+<input type="hidden" name="class" value="{{ selected_class_id }}">
+<input type="hidden" name="exam" value="{{ selected_exam_id }}">
+
+<table>
+    <thead>
+        <tr>
+            <th>Roll No</th>
+            <th>Name</th>
+            <th>Internal (30)</th>
+            <th>External (70)</th>
+            <th>Total</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+{% if marks_data %}
+    {% for row in marks_data %}
+    <tr>
+        <td>{{ row.student.roll_no }}</td>
+        <td>{{ row.student.name }}</td>
+
+        <td>
+            <span class="mark-text">{{row.internal}}</span>
+            <input type="number"
+                   name="internal_{{ row.student.id }}"
+                   value="{{ row.internal }}"
+                   min="0" max="30"
+                   class="mark-input"
+                   style="display: none;">
+        </td>
+
+        <td>
+            <span class="mark-text">{{row.external}}</span>
+            <input type="number"
+                   name="external_{{ row.student.id }}"
+                   value="{{ row.external }}"
+                   min="0" max="70"
+                   class="mark-input"
+                   style="display:none;">
+        </td>
+
+        <td class="total">{{ row.total|default:0 }}</td>
+
+        <td>
+            <button type="button" class="edit-btn">
+                <img src="{% static 'faculty/icons/pencil.svg' %}" width="18">
+            </button>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<button type="submit" class="update-btn">Update All Marks</button>
+</form>
+{% endif %}
+
+{% endblock %}
+
+{% block page_js %}
+<script src="{% static 'faculty/js/marks.js' %}"></script>
+{% endblock %}
