@@ -1,18 +1,19 @@
-function sendMessage(action) {
+function sendMessage() {
+
+    const inputField = document.getElementById("user-input");
+    const userMessage = inputField.value.trim();
+
+    if (!userMessage) return;
 
     const chatBox = document.getElementById("chat-box");
-
-    // Remove previous buttons
-    const existingOptions = document.querySelector(".options");
-    if (existingOptions) {
-        existingOptions.remove();
-    }
 
     // Show user message
     const userMsg = document.createElement("div");
     userMsg.classList.add("message", "user");
-    userMsg.innerText = action.replace("_", " ").toUpperCase();
+    userMsg.innerText = userMessage;
     chatBox.appendChild(userMsg);
+
+    inputField.value = "";
 
     fetch("/student/ai-response/", {
         method: "POST",
@@ -20,38 +21,21 @@ function sendMessage(action) {
             "Content-Type": "application/json",
             "X-CSRFToken": getCookie("csrftoken")
         },
-        body: JSON.stringify({ action: action })
+        body: JSON.stringify({ message: userMessage })
     })
     .then(response => response.json())
     .then(data => {
 
         const botMsg = document.createElement("div");
         botMsg.classList.add("message", "bot");
-        botMsg.innerText = data.message;
+        botMsg.innerText = data.reply;
         chatBox.appendChild(botMsg);
 
-        if (data.next_level === "actions") {
-            showActionButtons();
-        }
-
-        chatBox.scrollTop = chatBox.scrollHeight;
+        chatBox.scrollTo({
+            top: chatBox.scrollHeight,
+            behavior: "smooth"
+        });
     });
-}
-
-function showActionButtons() {
-
-    const chatBox = document.getElementById("chat-box");
-
-    const optionsDiv = document.createElement("div");
-    optionsDiv.classList.add("options");
-
-    optionsDiv.innerHTML = `
-        <button onclick="sendMessage('study_plan')">Generate Study Plan</button>
-        <button onclick="sendMessage('analysis')">View Subject Analysis</button>
-        <button onclick="sendMessage('tips')">Improvement Tips</button>
-    `;
-
-    chatBox.appendChild(optionsDiv);
 }
 
 function getCookie(name) {
