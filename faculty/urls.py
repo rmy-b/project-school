@@ -5,4 +5,5 @@ urlpatterns = [
     path('', views.faculty_dashboard, name='faculty_dashboard'),
     path('marks/',views.marks_page, name='marks_page'),
     path('attendance/', views.attendance_page, name="attendance_page"),
+    path('performance/',views.performance_view, name="performance_view"),
 ]

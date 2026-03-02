@@ -47,7 +47,8 @@
     <div class="action-card">
         <img src="{% static 'faculty/icons/chart-line.svg' %}" class="card-icon">
         <h3>Performance</h3>
-        <button>View Reports</button>
+        <a href="{% url 'performance_view' %}">
+        <button>View Reports</button></a>
     </div>
 </div>
 

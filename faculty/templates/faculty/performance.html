@@ -1,0 +1,97 @@
+{% extends "faculty/base.html" %}
+{% load static %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{% static 'faculty/css/performance.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<h2>Performance Analytics</h2>
+<p>Analyze overall student performance</p>
+
+<form method="get">
+    <label>Select Class:</label>
+    <select name="class" onchange="this.form.submit()">
+        <option value="">-- Select Class --</option>
+        {% for c in classes %}
+        <option value="{{ c.class_obj__id }}"
+            {% if c.class_obj__id|stringformat:"s" == selected_class_id|stringformat:"s" %}
+                selected
+            {% endif %}
+        >
+            {{ c.class_obj__class_name }} - {{ c.section__section_name }}
+        </option>
+        {% endfor %}
+    </select>
+</form>
+
+{% if selected_class_id %}
+
+<!-- CARDS ROW -->
+<div class="cards">
+    <div class="card">
+        <img src= "{% static 'faculty/icons/tick.svg' %}"  class = "card-icon1">
+        <h4>Class Average</h4>
+        <h1>{{ class_avg }}%</h1>
+    </div>
+
+    <div class="card warning">
+        <img src= "{% static 'faculty/icons/triangle-alert.svg' %}"  class = "card-icon1">
+        <h4>At-Risk Students</h4>
+        <h1>{{ at_risk|length }}</h1>
+        <button id="viewRiskBtn">View Students</button>
+    </div>
+    <div class="card ai-card">
+        <img src= "{% static 'faculty/icons/predict.svg' %}"  class = "card-icon1">
+    <h4>Predicted Pass %</h4>
+    <h1>{{ predicted_pass_percent }}%</h1>
+    <p>{{ predicted_pass_students }} / {{ total_students }} students</p>
+</div>
+</div>
+
+<!-- CHART -->
+<h3>Subject-wise Average</h3>
+
+<div id="chartData"
+     data-labels='[{% for s in subject_avg %}"{{ s.subject__subject_name }}"{% if not forloop.last %},{% endif %}{% endfor %}]'
+     data-values='[{% for s in subject_avg %}{{ s.avg }}{% if not forloop.last %},{% endif %}{% endfor %}]'>
+</div>
+
+<canvas id="subjectChart"></canvas>
+
+<!-- RISK TABLE -->
+<h3 id="riskSection">At-Risk Students</h3>
+
+<table>
+<thead>
+<tr>
+<th>Roll No</th>
+<th>Name</th>
+<th>Subject</th>
+<th>Mark</th>
+</tr>
+</thead>
+<tbody>
+{% for m in at_risk %}
+<tr>
+<td>{{ m.student.roll_no }}</td>
+<td>{{ m.student.name }}</td>
+<td>{{ m.subject.subject_name }}</td>
+<td>{{ m.total_marks }}</td>
+</tr>
+{% empty %}
+<tr>
+<td colspan="4">No at-risk students</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+{% endif %}
+{% endblock %}
+
+{% block page_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'faculty/js/performance.js' %}"></script>
+{% endblock %}

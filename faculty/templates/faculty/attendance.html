@@ -18,9 +18,9 @@
 
 <!-- Assigned class -->
 <div class="assigned-box">
-    <div>
+    <div class="assigned-text">
         <strong>Assigned Class</strong><br>
-        {{ class_obj.class_name }} - {{ section.section_name }}
+        <span>{{ class_obj.class_name }} - {{ section.section_name }}</span>
     </div>
     <button id="openModal" class="mark-btn">Mark Attendance</button>
 </div>
@@ -40,11 +40,9 @@
             <td>{{ row.student.roll_no }}</td>
             <td>{{ row.student.name }}</td>
             <td>
-                {% if row.status %}
-                    <span class="badge green">Present</span>
-                {% else %}
-                    <span class="badge red">Absent</span>
-                {% endif %}
+                <span class="badge green">
+                    {{ row.percentage }}%
+                </span>
             </td>
         </tr>
         {% endfor %}

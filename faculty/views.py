@@ -1,7 +1,9 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
-from details.models import Faculty, FacultyAssignment,Student, Marks, Exam, Attendance
+from details.models import Faculty, FacultyAssignment,Student, Marks, Exam, Attendance,Class
 import datetime
+from django.db.models import Avg
+from faculty.ML.predictor import predict_pass_percentage
 
 
 @login_required
@@ -161,13 +163,13 @@ def attendance_page(request):
         is_class_incharge=True
     ).first()
 
-    # ❌ Not class teacher
+    # Not class teacher
     if not class_incharge:
         return render(request, 'faculty/attendance.html', {
             'not_authorized': True
         })
 
-    # ✅ Class teacher
+    # Class teacher
     class_obj = class_incharge.class_obj
     section = class_incharge.section
 
@@ -227,9 +229,19 @@ def attendance_page(request):
         else:
             absent_count += 1
 
+        total_days = Attendance.objects.filter(student=student).count()
+        present_days = Attendance.objects.filter(student=student, status="P").count()
+
+        if total_days > 0:
+            percentage = round((present_days / total_days) * 100)
+        else:
+            percentage = 0
+
+
         attendance_data.append({
             'student': student,
-            'status': status
+            'status': status,
+            'percentage': percentage  
         })
 
     context = {
@@ -247,3 +259,74 @@ def attendance_page(request):
     }
 
     return render(request, 'faculty/attendance.html', context)
+
+
+
+
+def performance_view(request):
+    faculty = Faculty.objects.get(user=request.user)
+
+    # Only classes assigned to this faculty
+    assignments = FacultyAssignment.objects.filter(faculty=faculty)
+
+    classes = assignments.values(
+        'class_obj__id',
+        'class_obj__class_name',
+        'section__section_name'
+    ).distinct()
+
+    selected_class_id = request.GET.get("class")
+
+    data = {
+        "classes": classes,
+        "selected_class_id": selected_class_id,
+    }
+
+    if selected_class_id:
+        marks = Marks.objects.filter(
+            student__class_obj_id=selected_class_id,
+            student__section__in=assignments.values('section')
+        )
+
+        # 1. Class Average
+        class_avg = marks.aggregate(avg=Avg('total_marks'))['avg'] or 0
+
+        # 2. At-risk students (<50%)
+        at_risk = marks.filter(total_marks__lt=50).select_related('student', 'subject')
+
+        # 3. Subject-wise Average
+        subject_avg = (
+            marks.values('subject__subject_name')
+            .annotate(avg=Avg('total_marks'))
+        )
+        top_student = marks.order_by('-total_marks').first()
+
+        # Attendance percentage
+        total_classes = Attendance.objects.filter(
+            student__class_obj_id=selected_class_id
+            ).count()
+
+        present_count = Attendance.objects.filter(
+            student__class_obj_id=selected_class_id,status='P').count()
+
+        attendance_percent = (present_count / total_classes * 100) if total_classes > 0 else 0
+
+        # ML Prediction
+        predicted_pass_percent = predict_pass_percentage(class_avg, attendance_percent)
+
+        total_students = Student.objects.filter(class_obj_id=selected_class_id).count()
+        predicted_pass_students = int((predicted_pass_percent / 100) * total_students)
+
+
+        data.update({
+            "class_avg": round(class_avg, 2),
+            "at_risk": at_risk,
+            "subject_avg": subject_avg,
+            "top_student": top_student,
+            "class_avg": round(class_avg, 2),
+            "predicted_pass_percent": predicted_pass_percent,
+            "predicted_pass_students": predicted_pass_students,
+            "total_students": total_students,
+})
+
+    return render(request, "faculty/performance.html", data)

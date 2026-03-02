@@ -41,8 +41,10 @@
                     </a>
                 </li>
 
-                <li>
+                <li class="{% if request.resolver_match.url_name == 'performance_view' %}active{% endif %}">
+                    <a href="{% url 'performance_view' %}">
                     <img src="{% static 'faculty/icons/chart-line black.svg' %}" class="icon"> Performance
+                    </a>
                 </li>
             </ul>
         </div>
