@@ -134,7 +134,7 @@ body {
 
 /* User */
 .user {
-    background: #D97706;
+    background: #c88400;
     color: white;
     margin-left: auto;
     display: block;
@@ -161,7 +161,7 @@ body {
     padding: 8px 16px;
     border-radius: 8px;
     border: none;
-    background: #D97706;
+    background: #c88400;
     color: white;
     font-weight: 600;
     cursor: pointer;

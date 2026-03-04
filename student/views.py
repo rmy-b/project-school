@@ -57,24 +57,36 @@ def dashboard(request):
     else:
         attendance_percentage = 0
 
-    # Monthly Attendance Trend
+    # Order attendance by date (important)
+    attendance_records = Attendance.objects.filter(student=student).order_by('date')
+
     monthly_data = defaultdict(list)
 
     for record in attendance_records:
-        month_key = record.date.strftime("%b %Y")  # Example: "Feb 2026"
+        month_key = record.date.strftime("%b %Y")
         monthly_data[month_key].append(record.status)
+
+    # Convert month strings back to datetime for proper sorting
+    sorted_months = sorted(
+        monthly_data.keys(),
+        key=lambda x: datetime.strptime(x, "%b %Y")
+    )
+
+    # Keep only last 4 months
+    sorted_months = sorted_months[-4:]
 
     months = []
     monthly_percentages = []
 
-    for month, statuses in monthly_data.items():
+    for month in sorted_months:
+        statuses = monthly_data[month]
         total = len(statuses)
         present = statuses.count('P')
 
         percentage = round((present / total) * 100, 2)
+
         months.append(month)
-        monthly_percentages.append(percentage)
-    
+        monthly_percentages.append(percentage)  
 
     # Subject-wise data for bar chart
     subject_names = []

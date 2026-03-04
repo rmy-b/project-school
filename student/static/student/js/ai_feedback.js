@@ -52,3 +52,15 @@ function getCookie(name) {
     }
     return cookieValue;
 }
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    const inputField = document.getElementById("user-input");
+
+    inputField.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            sendMessage();
+        }
+    });
+});
