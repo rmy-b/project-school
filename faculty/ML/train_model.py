@@ -19,15 +19,16 @@ from details.models import Marks, Attendance
 # ---------------------------
 # Prepare training data
 # ---------------------------
+X = []  # features: [marks_percent, attendance_percent]
+y = []  # label: 1 = pass, 0 = fail
 
-X = []  # features
-y = []  # label (pass/fail)
-
-marks_data = Marks.objects.select_related("student")
+marks_data = Marks.objects.select_related("student", "subject")
 
 for m in marks_data:
     student = m.student
+    subject = m.subject
 
+    # Attendance for THIS student
     total_classes = Attendance.objects.filter(student=student).count()
     present_classes = Attendance.objects.filter(student=student, status='P').count()
 
@@ -35,12 +36,14 @@ for m in marks_data:
         continue
 
     attendance_percent = (present_classes / total_classes) * 100
+
+    # Marks for THIS SUBJECT only
     marks_percent = m.total_marks
 
-    # feature: [marks %, attendance %]
+    # Feature vector
     X.append([marks_percent, attendance_percent])
 
-    # label: 1 = pass, 0 = fail
+    # Label: pass or fail based on THIS subject
     y.append(1 if marks_percent >= 50 else 0)
 
 X = np.array(X)
@@ -49,15 +52,13 @@ y = np.array(y)
 # ---------------------------
 # Train model
 # ---------------------------
-
 model = LogisticRegression()
 model.fit(X, y)
 
 # ---------------------------
 # Save model
 # ---------------------------
-
 MODEL_PATH = os.path.join(os.path.dirname(__file__), "model.pkl")
 joblib.dump(model, MODEL_PATH)
 
-print("Model trained and saved as model.pkl")
+print("Subject-wise model trained and saved as model.pkl")

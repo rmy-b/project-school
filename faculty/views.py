@@ -283,23 +283,33 @@ def performance_view(request):
     }
 
     if selected_class_id:
-        marks = Marks.objects.filter(
+        faculty_subjects = assignments.filter(
+            class_obj_id=selected_class_id
+        ).values_list('subject', flat=True)
+
+        faculty_marks = Marks.objects.filter(
+            student__class_obj_id=selected_class_id,
+            student__section__in=assignments.values('section'),
+            subject__in=faculty_subjects
+        )
+
+        all_marks = Marks.objects.filter(
             student__class_obj_id=selected_class_id,
             student__section__in=assignments.values('section')
         )
 
         # 1. Class Average
-        class_avg = marks.aggregate(avg=Avg('total_marks'))['avg'] or 0
+        class_avg = faculty_marks.aggregate(avg=Avg('total_marks'))['avg'] or 0
 
         # 2. At-risk students (<50%)
-        at_risk = marks.filter(total_marks__lt=50).select_related('student', 'subject')
+        at_risk = faculty_marks.filter(total_marks__lt=50).select_related('student', 'subject')
 
         # 3. Subject-wise Average
         subject_avg = (
-            marks.values('subject__subject_name')
+            all_marks.values('subject__subject_name')
             .annotate(avg=Avg('total_marks'))
         )
-        top_student = marks.order_by('-total_marks').first()
+        top_student = faculty_marks.order_by('-total_marks').first()
 
         # Attendance percentage
         total_classes = Attendance.objects.filter(
@@ -319,6 +329,7 @@ def performance_view(request):
 
 
         data.update({
+            "faculty": faculty,
             "class_avg": round(class_avg, 2),
             "at_risk": at_risk,
             "subject_avg": subject_avg,
@@ -330,3 +341,126 @@ def performance_view(request):
 })
 
     return render(request, "faculty/performance.html", data)
+
+
+from openpyxl import Workbook
+from django.http import HttpResponse
+from django.utils import timezone
+import datetime
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+
+
+@login_required
+def generate_attendance_report(request):
+    faculty = Faculty.objects.get(user=request.user)
+
+    class_incharge = FacultyAssignment.objects.filter(
+        faculty=faculty,
+        is_class_incharge=True
+    ).first()
+
+    if not class_incharge:
+        return HttpResponse("Not authorized")
+
+    class_obj = class_incharge.class_obj
+    section = class_incharge.section
+
+    duration = request.POST.get("duration")
+    today = timezone.now().date()
+
+    if duration == "today":
+        start_date = today
+    elif duration == "2days":
+        start_date = today - datetime.timedelta(days=1)
+    elif duration == "3days":
+        start_date = today - datetime.timedelta(days=2)
+    elif duration == "1month":
+        start_date = today - datetime.timedelta(days=30)
+    else:
+        start_date = today
+
+    students = Student.objects.filter(class_obj=class_obj, section=section)
+
+    # ---- FIX: START DATE SHOULD NOT GO BEFORE FIRST ATTENDANCE ----
+    first_record = Attendance.objects.filter(
+        student__in=students
+    ).order_by("date").first()
+
+    if first_record and first_record.date > start_date:
+        start_date = first_record.date
+
+    # ---- CREATE DATE LIST ----
+    date_list = []
+    d = start_date
+    while d <= today:
+        date_list.append(d)
+        d += datetime.timedelta(days=1)
+
+    # ---- CREATE EXCEL ----
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Attendance Report"
+
+    # HEADER (UNCHANGED)
+    ws.append(["Class", f"{class_obj.class_name} - {section.section_name}"])
+    ws.append(["From", str(start_date)])
+    ws.append(["To", str(today)] )
+    ws.append([])
+
+    # TABLE HEADER
+    header = ["Roll No", "Name"]
+    for d in date_list:
+        header.append(str(d))
+    ws.append(header)
+
+    # DAILY COUNTS
+    daily_present = {d: 0 for d in date_list}
+    daily_absent = {d: 0 for d in date_list}
+
+    for student in students:
+        row = [student.roll_no, student.name]
+
+        for d in date_list:
+
+            # ---- SUNDAY = HOLIDAY ----
+            if d.weekday() == 6:  # Sunday
+                row.append("Holiday")
+                continue
+
+            record = Attendance.objects.filter(student=student, date=d).first()
+
+            if record and record.status == "P":
+                row.append("Present")
+                daily_present[d] += 1
+            elif record and record.status == "A":
+                row.append("Absent")
+                daily_absent[d] += 1
+            else:
+                row.append("")  # no data (do not force Absent)
+
+        ws.append(row)
+
+    # ---- TOTALS PER DAY ----
+    ws.append([])
+    total_row = ["Total", ""]
+    present_row = ["Present", ""]
+    absent_row = ["Absent", ""]
+
+    for d in date_list:
+        total_row.append(daily_present[d] + daily_absent[d])
+        present_row.append(daily_present[d])
+        absent_row.append(daily_absent[d])
+
+    ws.append(total_row)
+    ws.append(present_row)
+    ws.append(absent_row)
+
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    filename = f"attendance_{class_obj.class_name}_{section.section_name}.xlsx"
+    response['Content-Disposition'] = f'attachment; filename={filename}'
+
+    wb.save(response)
+    return response

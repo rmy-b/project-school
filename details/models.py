@@ -1,6 +1,7 @@
 from django.db import models
-from users.models import CustomUser  
+from users.models import CustomUser 
 from django.core.exceptions import ValidationError
+from django.db.models import UniqueConstraint,Q
 
 
 class Class(models.Model):
@@ -116,14 +117,31 @@ class FacultyAssignment(models.Model):
     class_obj = models.ForeignKey(Class, on_delete=models.CASCADE)
     section = models.ForeignKey(Section, on_delete=models.CASCADE)
     is_class_incharge = models.BooleanField(default=False)
-
+    
     class Meta:
-        unique_together = ('faculty', 'subject', 'class_obj', 'section')
+        constraints = [
+            # 1. Same subject cannot be assigned twice for same class+section
+            UniqueConstraint(
+                fields=['subject', 'class_obj', 'section'],
+                name='unique_subject_per_class'
+            ),
 
+            # 2. Same faculty cannot teach two subjects in same class+section
+            UniqueConstraint(
+                fields=['faculty', 'class_obj', 'section'],
+                name='faculty_one_subject_per_class'
+            ),
+
+            # 3. Only ONE class teacher per class+section
+            UniqueConstraint(
+                fields=['class_obj', 'section'],
+                condition=Q(is_class_incharge=True),
+                name='only_one_class_incharge_per_section'
+            ),
+        ]
     def clean(self):
         if self.section.class_obj != self.class_obj:
             raise ValidationError("Selected Section Does Not Belong To Selected Class.")
-
     def __str__(self):
         return f"{self.faculty.name} - {self.subject.subject_name} - {self.class_obj.class_name}{self.section.section_name}"
 

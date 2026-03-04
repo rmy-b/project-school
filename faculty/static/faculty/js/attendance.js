@@ -41,3 +41,13 @@ document.querySelectorAll('.toggle input').forEach(toggle => {
         }
     });
 });
+const openReportBtn = document.getElementById("openReportModal");
+const reportModal = document.getElementById("reportModal");
+const closeReportBtn = document.getElementById("closeReportModal");
+
+if (openReportBtn) {
+    openReportBtn.onclick = () => reportModal.style.display = "flex";
+}
+if (closeReportBtn) {
+    closeReportBtn.onclick = () => reportModal.style.display = "none";
+}

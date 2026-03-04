@@ -23,6 +23,7 @@
         <span>{{ class_obj.class_name }} - {{ section.section_name }}</span>
     </div>
     <button id="openModal" class="mark-btn">Mark Attendance</button>
+    <button id="openReportModal" class="mark-btn">Generate Report</button>
 </div>
 
 <!-- Students list -->
@@ -118,6 +119,27 @@
 </div>
 
 {% endif %}
+<div id="reportModal" class="modal">
+  <div class="modal-content" style="width:500px">
+    <span id="closeReportModal" class="close">&times;</span>
+
+    <h3>Generate Attendance Report</h3>
+
+    <form method="post" action="{% url 'attendance_report' %}">
+      {% csrf_token %}
+
+      <label>Select Duration</label>
+      <select name="duration" required>
+        <option value="today">Today</option>
+        <option value="2days">Last 2 Days</option>
+        <option value="3days">Last 3 Days</option>
+        <option value="1month">Last 1 Month</option>
+      </select>
+
+      <button type="submit" class="save-btn">Generate</button>
+    </form>
+  </div>
+</div>
 
 {% endblock %}
 

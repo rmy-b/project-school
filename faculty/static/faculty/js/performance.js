@@ -15,7 +15,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 datasets: [{
                     label: "Average Marks",
                     data: values,
-                    backgroundColor: "#c8870a"
+                    backgroundColor: "#c8870a",
+                    borderRadius:7,
+                    barThickness:90
                 }]
             },
             options: {
