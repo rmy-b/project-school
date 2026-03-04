@@ -1,0 +1,168 @@
+/* ================= PAGE BACKGROUND ================= */
+
+/* Keep page subtle beige */
+body {
+    background: #f3efe6;
+}
+
+/* ================= HEADER ================= */
+
+.ai-header h2 {
+    margin-bottom: 2px;   /* reduced gap */
+}
+
+.ai-header p {
+    color: #777;
+    margin-bottom: 15px;  /* reduced spacing */
+}
+
+/* ================= CARDS ================= */
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;              /* reduced */
+    margin-bottom: 20px;    /* reduced */
+}
+
+.ai-card {
+    background: #ffffff;    /* changed to white */
+    padding: 18px;          /* slightly reduced */
+    border-radius: 14px;
+    border: 1px solid #eee;
+}
+
+.ai-card h4 {
+    margin-top: 10px;
+    margin-bottom: 4px;     /* reduce heading-content gap */
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.card-desc {
+    margin-top: 0px;        /* removed extra gap */
+    font-size: 13px;
+    color: #6b6b6b;
+    line-height: 1.4;
+}
+
+/* Icon Box */
+.icon-box {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-box img {
+    width: 18px;
+}
+
+/* Icon Colors */
+.green { background: #d9f2e6; }
+.orange { background: #ffe7d6; }
+.blue { background: #dce8ff; }
+.yellow { background: #fff3d6; }
+
+/* ================= CHAT ================= */
+
+.chat-container {
+    background: #ffffff;   /* white for contrast */
+    border-radius: 14px;
+    border: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+
+    /* Reduced height so it fits screen */
+    height: 380px;
+    overflow: hidden;
+}
+
+.chat-header {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;  /* reduced */
+    gap: 10px;
+}
+
+/* NEW: Bot icon background */
+.chat-header img {
+    width: 18px;
+    background: #f3efe6;
+    padding: 8px;
+    border-radius: 8px;
+}
+
+.chat-title {
+    font-weight: 600;
+}
+
+.chat-subtitle {
+    font-size: 12px;
+    color: #888;
+}
+
+.divider {
+    height: 1px;
+    background: #eee;
+}
+
+/* Chat Body */
+.chat-box {
+    flex: 1;
+    padding: 14px;    /* reduced */
+    overflow-y: auto;
+}
+
+/* Message Bubbles */
+.message {
+    padding: 8px 12px;   /* slightly smaller */
+    margin-bottom: 10px;
+    border-radius: 14px;
+    font-size: 14px;
+    display: inline-block;
+    max-width: 65%;
+}
+
+/* Bot */
+.bot {
+    background: #e5e5e5;
+    color: #333;
+}
+
+/* User */
+.user {
+    background: #c88400;
+    color: white;
+    margin-left: auto;
+    display: block;
+    width: fit-content;
+}
+
+/* Input */
+.input-group {
+    display: flex;
+    padding: 10px 14px;  /* reduced */
+    border-top: 1px solid #eee;
+}
+
+.input-group input {
+    flex: 1;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    outline: none;
+}
+
+.input-group button {
+    margin-left: 10px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    background: #c88400;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
