@@ -1,0 +1,103 @@
+{% extends "student/layout.html" %}
+{% load static %}
+{% block student_content %}
+
+<link rel="stylesheet" href="{% static 'student/css/ai_feedback.css' %}">
+
+<div class="ai-wrapper">
+
+    <div class="ai-header">
+        <h2>AI Feedback & Guidance</h2>
+        <p>Personalized academic recommendations powered by AI</p>
+    </div>
+
+    <div class="cards-grid">
+
+        <!-- Strong Subject -->
+        <div class="ai-card">
+            <div class="icon-box green">
+                <img src="{% static 'student/icons/trending-up.svg' %}">
+            </div>
+            <h4>Strong Subject</h4>
+            <p class="card-desc">
+                {{ strong_subject.subject.subject_name }} ({{ strong_subject.total_marks }}) - 
+                Keep up the excellent work!
+            </p>
+        </div>
+
+        <!-- Focus Area -->
+        <div class="ai-card">
+            <div class="icon-box orange">
+                <img src="{% static 'student/icons/target.svg' %}">
+            </div>
+            <h4>Focus Area</h4>
+            <p class="card-desc">
+                {{ weak_subject.subject.subject_name }} ({{ weak_subject.total_marks }}) - 
+                Needs more attention.
+            </p>
+        </div>
+
+        <!-- Risk -->
+        <div class="ai-card">
+            <div class="icon-box blue">
+                <img src="{% static 'student/icons/triangle-alert.svg' %}">
+            </div>
+            <h4>Risk Level</h4>
+            <p class="card-desc">
+                {{ risk_level }} <br>
+                Trend: {{ trend_direction }} ({{ trend_percentage }}%)
+            </p>
+        </div>
+
+        <!-- Prediction -->
+        <div class="ai-card">
+            <div class="icon-box yellow">
+                <img src="{% static 'student/icons/lightbulb.svg' %}">
+            </div>
+            <h4>Recommendations</h4>
+            <p class="card-desc">
+                {{ prediction }}
+            </p>
+        </div>
+
+    </div>
+
+
+    <!-- ================= CHAT ================= -->
+
+    <div class="chat-section">
+
+        <div class="chat-container">
+
+            <div class="chat-header">
+                <img src="{% static 'student/icons/bot.svg' %}">
+                <div>
+                    <div class="chat-title">Study Assistant</div>
+                    <div class="chat-subtitle">
+                        Ask study-related questions only
+                    </div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="chat-box" id="chat-box">
+                <div class="message bot">
+                    Hello! I'm your AI study assistant. How can I help you today?
+                </div>
+            </div>
+
+            <div class="input-group">
+                <input type="text" id="user-input" placeholder="Ask about study tips, subjects, or exam prep...">
+                <button onclick="sendMessage()">Send</button>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="{% static 'student/js/ai_feedback.js' %}"></script>
+
+{% endblock %}

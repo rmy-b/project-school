@@ -1,0 +1,69 @@
+{% extends "users/base.html" %}
+{% load static %}
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'student/css/dashboard.css' %}">
+
+<div class="dashboard-wrapper">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+
+        <div class="sidebar-top">
+            <div class="sidebar-header">
+                <div class="logo-box">
+                    <img src="{% static 'student/icons/graduation-cap.svg' %}">
+                </div>
+                <div class="logo-text">
+                    <h3>SPM System</h3>
+                    <span>Student Portal</span>
+                </div>
+            </div>
+
+            <hr class="sidebar-divider">
+
+            <ul class="sidebar-menu">
+                <li class="{% if request.resolver_match.url_name == 'student_dashboard' %}active{% endif %}">
+                    <img src="{% static 'student/icons/dashboard.svg' %}" class="menu-icon">
+                    <a href="{% url 'student_dashboard' %}">Dashboard</a>
+                </li>
+
+                <li class="{% if request.resolver_match.url_name == 'detailed_marks' %}active{% endif %}">
+                    <img src="{% static 'student/icons/file-text.svg' %}" class="menu-icon">
+                    <a href="{% url 'detailed_marks' %}">Detailed Marks</a>
+                </li>
+
+                <li class="{% if request.resolver_match.url_name == 'ai_feedback' %}active{% endif %}">
+                    <img src="{% static 'student/icons/bot.svg' %}" class="menu-icon">
+                    <a href="{% url 'ai_feedback' %}">AI Feedback</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Footer -->
+        <div class="sidebar-footer">
+            <div>
+                <strong>{{ student.name|default:"Student" }}</strong><br>
+                <small>Student</small>
+            </div>
+            <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+        </div>
+
+    </aside>
+
+    <!-- MAIN -->
+    <main class="dashboard-container">
+
+        <div class="top-navbar">
+            <img src="{% static 'student/icons/panel-left.svg' %}" id="menuToggle" class="toggle-icon">
+        </div>
+        <div class="main-content">
+            {% block student_content %}{% endblock %}
+        </div>
+        
+    </main>
+</div>
+
+<script src="{% static 'student/js/dashboard.js' %}"></script>
+
+{% endblock %}

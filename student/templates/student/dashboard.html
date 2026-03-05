@@ -1,0 +1,95 @@
+{% extends "student/layout.html" %}
+{% load static %}
+
+{% block student_content %}
+
+<!-- STUDENT INFO -->
+<div class="student-info">
+    <div class="avatar-box">{{ student.name|slice:":1" }}</div>
+    <div class="student-text">
+        <h2>{{ student.name }}</h2>
+        <p>Class {{ student.class_obj.class_name }}</p>
+        <p>Section {{ student.section.section_name }}</p>
+        <p>Roll No {{ student.roll_no }}</p>
+    </div>
+</div>
+
+<!-- PERFORMANCE CARDS -->
+<div class="performance-cards">
+
+    <div class="card">
+        <div class="card-top">
+            <span>Average Score</span>
+            <div class="icon-box yellow">
+                <img src="{% static 'student/icons/award.svg' %}">
+            </div>
+        </div>
+        <div class="card-value">{{ average_score }}%</div>
+    </div>
+
+    <div class="card">
+        <div class="card-top">
+            <span>Attendance</span>
+            <div class="icon-box blue">
+                <img src="{% static 'student/icons/calendar.svg' %}">
+            </div>
+        </div>
+        <div class="card-value">{{ attendance_percentage }}%</div>
+    </div>
+
+</div>
+
+<!-- CHARTS -->
+<div class="charts-row">
+
+    <div class="chart-wrapper">
+        <h3>Subject-wise Performance</h3>
+        <div class="chart-card">
+            <canvas id="marksChart"></canvas>
+        </div>
+    </div>
+
+    <div class="chart-wrapper">
+        <h3>Attendance Trend</h3>
+        <div class="chart-card">
+            <canvas id="attendanceChart"></canvas>
+        </div>
+    </div>
+
+</div>
+
+<!-- BOTTOM CARDS -->
+<div class="bottom-cards">
+
+    <a href="{% url 'detailed_marks' %}" class="bottom-card">
+        <div class="icon-box light">
+            <img src="{% static 'student/icons/file-text.svg' %}">
+        </div>
+        <div>
+            <h4>Detailed Marks</h4>
+            <p>View complete subject-wise marks breakdown</p>
+        </div>
+    </a>
+
+    <a href="{% url 'ai_feedback' %}" class="bottom-card">
+        <div class="icon-box light">
+            <img src="{% static 'student/icons/bot.svg' %}">
+        </div>
+        <div>
+            <h4>AI Feedback</h4>
+            <p>Get personalized study recommendations</p>
+        </div>
+    </a>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+const subjectNames = JSON.parse('{{ subject_names|escapejs }}');
+const subjectScores = JSON.parse('{{ subject_scores|escapejs }}');
+const attendanceMonths = JSON.parse('{{ months|escapejs }}');
+const attendancePercentages = JSON.parse('{{ monthly_percentages|escapejs }}');
+</script>
+
+{% endblock %}

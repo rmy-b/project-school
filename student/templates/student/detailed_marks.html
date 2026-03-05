@@ -1,0 +1,103 @@
+{% extends "student/layout.html" %}
+{% load static %}
+{% block student_content %}
+
+<link rel="stylesheet" href="{% static 'student/css/dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'student/css/detailed_marks.css' %}">
+
+<div class="dashboard-wrapper">
+
+
+    <main class="dashboard-container">
+
+        <div class="page-header">
+            <h2>Detailed Marks</h2>
+            <p>Complete breakdown of your academic performance</p>
+        </div>
+
+        <!-- SUMMARY CARDS -->
+        <div class="summary-cards">
+
+            <div class="summary-card">
+                <div class="card-left">
+                    <span>Total Marks</span>
+                    <h3>{{ total_marks }}/500</h3>
+                </div>
+                <div class="card-icon gold">
+                    <img src="{% static 'student/icons/award.svg' %}" alt="award">
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="card-left">
+                    <span>Percentage</span>
+                    <h3>{{ overall_percentage }}%</h3>
+                </div>
+                <div class="card-icon green">
+                    <img src="{% static 'student/icons/percent.svg' %}" alt="percent">
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="card-left">
+                    <span>Overall Grade</span>
+                    <h3>{{ overall_grade }}</h3>
+                </div>
+                <div class="card-icon blue">
+                    <img src="{% static 'student/icons/trophy.svg' %}" alt="trophy">
+                </div>
+            </div>
+
+        </div>
+
+        <!-- TABLE -->
+        <div class="table-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Internal (30)</th>
+                        <th>External (70)</th>
+                        <th>Total (100)</th>
+                        <th>Grade</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for s in subjects %}
+                    <tr>
+                        <td>{{ s.subject }}</td>
+                        <td>{{ s.internal }}</td>
+                        <td>{{ s.external }}</td>
+                        <td class="total">{{ s.total }}</td>
+                        <td>
+                            <span class="grade-badge 
+                                {% if s.grade == 'A+' %} grade-a-plus
+                                {% elif s.grade == 'A' %} grade-a
+                                {% elif s.grade == 'B+' %} grade-b-plus
+                                {% elif s.grade == 'B' %} grade-b
+                                {% else %} grade-default
+                                {% endif %}
+                            ">
+                                {{ s.grade }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                    <tr class="total-row">
+                        <td>Total</td>
+                        <td>{{ total_internal }}</td>
+                        <td>{{ total_external }}</td>
+                        <td>{{ total_marks }}</td>
+                        <td>{{ overall_grade }}</td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+</div>
+
+{% endblock %}
