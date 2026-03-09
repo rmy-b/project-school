@@ -28,6 +28,13 @@ urlpatterns = [
      
 #     path('student/', include('student.urls')),
 # 
+
+
+
+
+
+
+    # path('adminpanel/', include('adminpanel.urls')),
 ]
 
 
