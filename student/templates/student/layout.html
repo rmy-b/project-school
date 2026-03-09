@@ -16,13 +16,17 @@
                 </div>
                 <div class="logo-text">
                     <h3>SPM System</h3>
-                    <span>Student Portal</span>
+                    <span>Portal</span>
                 </div>
             </div>
 
             <hr class="sidebar-divider">
 
             <ul class="sidebar-menu">
+
+                <!-- STUDENT MENU -->
+                {% if request.user.role == "student" %}
+
                 <li class="{% if request.resolver_match.url_name == 'student_dashboard' %}active{% endif %}">
                     <img src="{% static 'student/icons/dashboard.svg' %}" class="menu-icon">
                     <a href="{% url 'student_dashboard' %}">Dashboard</a>
@@ -37,14 +41,64 @@
                     <img src="{% static 'student/icons/bot.svg' %}" class="menu-icon">
                     <a href="{% url 'ai_feedback' %}">AI Feedback</a>
                 </li>
+
+                {% endif %}
+
+
+                <!-- FACULTY MENU -->
+                {% if request.user.role == "faculty" %}
+
+                <li>
+                    <img src="{% static 'student/icons/dashboard.svg' %}" class="menu-icon">
+                    <a href="{% url 'faculty_dashboard' %}">Dashboard</a>
+                </li>
+
+                <li>
+                    <img src="{% static 'student/icons/file-text.svg' %}" class="menu-icon">
+                    <a href="#">Enter Marks</a>
+                </li>
+
+                {% endif %}
+
+
+                <!-- ADMIN MENU -->
+                {% if request.user.role == "admin" %}
+
+                <li class="{% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+                    <img src="{% static 'student/icons/dashboard.svg' %}" class="menu-icon">
+                    <a href="{% url 'admin_dashboard' %}">Dashboard</a>
+                </li>
+
+                <li>
+                    <img src="{% static 'student/icons/users.svg' %}" class="menu-icon">
+                    <a href="#">Manage Students</a>
+                </li>
+
+                <li>
+                    <img src="{% static 'student/icons/user-cog.svg' %}" class="menu-icon">
+                    <a href="#">Manage Faculty</a>
+                </li>
+
+                <li>
+                    <img src="{% static 'student/icons/book-open-text.svg' %}" class="menu-icon">
+                    <a href="#">Classes & Subjects</a>
+                </li>
+
+                <li>
+                    <img src="{% static 'student/icons/chart-column.svg' %}" class="menu-icon">
+                    <a href="#">Reports & Analytics</a>
+                </li>
+
+                {% endif %}
+
             </ul>
         </div>
 
         <!-- Footer -->
         <div class="sidebar-footer">
             <div>
-                <strong>{{ student.name|default:"Student" }}</strong><br>
-                <small>Student</small>
+                <strong>{{ request.user.username }}</strong><br>
+                <small>{{ request.user.role|title }}</small>
             </div>
             <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
         </div>
@@ -57,11 +111,13 @@
         <div class="top-navbar">
             <img src="{% static 'student/icons/panel-left.svg' %}" id="menuToggle" class="toggle-icon">
         </div>
+
         <div class="main-content">
             {% block student_content %}{% endblock %}
         </div>
-        
+
     </main>
+
 </div>
 
 <script src="{% static 'student/js/dashboard.js' %}"></script>
