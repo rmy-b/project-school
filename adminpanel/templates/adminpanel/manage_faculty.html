@@ -1,0 +1,196 @@
+{% extends "student/layout.html" %}
+{% load static %}
+
+
+{% block student_content %}
+<link rel="stylesheet" href="{% static 'adminpanel/css/manage_faculty.css' %}">
+
+<div class="faculty-container">
+        <h2>Manage Faculty</h2>
+    <p class="page-desc">Add, Edit and Manage Faculty Members</p>
+
+    <div class="faculty-header">
+       
+        <button id="openAddModal" class="add-btn">+ Add Faculty</button>
+    </div>
+
+    {% if messages %}
+    {% for message in messages %}
+        <div class="message {{ message.tags }}">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+    
+
+    <table class="faculty-table">
+        <thead>
+            <tr>
+                <th>Faculty ID</th>
+                <th>Name</th>
+                <th>Qualification</th>
+                <th>Username</th>
+                <th>Active</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+        {% for faculty in faculty_list %}
+
+        <tr>
+            <td>{{ faculty.faculty_code }}</td>
+            <td>{{ faculty.name }}</td>
+            <td>{{ faculty.qualification }}</td>
+            <td>{{ faculty.user.username }}</td>
+
+          <td>
+    <label class="switch">
+        <input type="checkbox"
+               class="faculty-toggle"
+               data-id="{{ faculty.id }}"
+               {% if faculty.user.is_active %}checked{% endif %}>
+        <span class="slider"></span>
+    </label>
+</td>
+
+            <td>
+<button class="edit-btn"
+        data-id="{{ faculty.id }}"
+        data-name="{{ faculty.name }}"
+        data-qualification="{{ faculty.qualification }}"
+        data-username="{{ faculty.user.username }}">
+   <img src="{% static  'faculty/icons/pencil.svg' %} " >
+</button>
+                
+<button class="delete-btn"
+        data-id="{{ faculty.id }}"
+        data-name="{{ faculty.name }}">
+    <img src="{% static  'adminpanel/icons/trash.svg' %} " >
+</button>
+            </td>
+
+        </tr>
+
+        {% empty %}
+
+        <tr>
+            <td colspan="6">No faculty found</td>
+        </tr>
+
+        {% endfor %}
+
+        </tbody>
+    </table>
+<!-- Add Faculty Modal -->
+
+<div id="addFacultyModal" class="modal">
+
+    <div class="modal-content">
+
+        <span id="closeModal" class="close-btn">&times;</span>
+
+        <h3>Add New Faculty</h3>
+
+        <form method="POST" action="">
+            {% csrf_token %}
+
+            <label>Name</label>
+            <input type="text" name="name" required>
+
+            <label>Qualification</label>
+            <input type="text" name="qualification" required>
+
+            <label>Username</label>
+            <input type="text" name="username" required>
+
+            <label>Password</label>
+            <input type="password" name="password" required>
+
+            <button type="submit" class="submit-btn">Add Faculty</button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<div id="editFacultyModal" class="modal">
+
+<div class="modal-content">
+
+<span class="close-edit">&times;</span>
+
+<h3>Edit Faculty</h3>
+
+<form method="POST" action="{% url 'update_faculty' %}">
+{% csrf_token %}
+
+<input type="hidden" name="faculty_id" id="editFacultyId">
+
+<label>Name</label>
+<input type="text" name="name" id="editName" required>
+
+<label>Qualification</label>
+<input type="text" name="qualification" id="editQualification" required>
+
+<label>Username</label>
+<input type="text" name="username" id="editUsername" required>
+
+<label>Password</label>
+<button type="button" id="resetPasswordBtn">Reset Password</button>
+
+<div id="newPasswordSection" style="display:none;">
+
+<label>New Password</label>
+<input type="password" name="new_password">
+
+</div>
+
+<div class="modal-actions">
+<button type="submit" class="submit-btn">Update Faculty</button>
+<button type="button" class="cancel-btn">Cancel</button>
+</div>
+
+</form>
+
+</div>
+</div>
+<div id="deleteFacultyModal" class="modal">
+
+<div class="modal-content">
+
+<span class="close-delete">&times;</span>
+
+<h3>Delete Faculty</h3>
+
+<p id="deleteMessage">
+    Do you want to delete this faculty?
+</p>
+
+<form method="POST" action="{% url 'delete_faculty' %}">
+{% csrf_token %}
+
+<input type="hidden" name="faculty_id" id="deleteFacultyId">
+
+<div class="modal-actions">
+
+<button type="submit" class="delete-confirm-btn">
+Delete Faculty
+</button>
+
+<button type="button" class="cancel-delete-btn">
+Cancel
+</button>
+
+</div>
+
+</form>
+
+</div>
+</div>
+</div>
+<script src="{% static 'adminpanel/js/manage_faculty.js' %}"></script>
+{% endblock %}

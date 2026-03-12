@@ -74,9 +74,9 @@
                     <a href="#">Manage Students</a>
                 </li>
 
-                <li>
+                <li class="{% if request.resolver_match.url_name == 'manage_faculty' %}active{% endif %}">
                     <img src="{% static 'student/icons/user-cog.svg' %}" class="menu-icon">
-                    <a href="#">Manage Faculty</a>
+                    <a href="{% url 'manage_faculty' %}">Manage Faculty</a>
                 </li>
 
                 <li>
