@@ -69,9 +69,9 @@
                     <a href="{% url 'admin_dashboard' %}">Dashboard</a>
                 </li>
 
-                <li>
+                <li class="{% if request.resolver_match.url_name == 'manage_students' %}active{% endif %}">
                     <img src="{% static 'student/icons/users.svg' %}" class="menu-icon">
-                    <a href="#">Manage Students</a>
+                    <a href="{% url 'manage_students' %}">Manage Students</a>
                 </li>
 
                 <li>

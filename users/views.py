@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
-
+from users.models import CustomUser
 def login_view(request):
 
     if request.method == "POST":
@@ -14,27 +14,48 @@ def login_view(request):
 
         user = authenticate(request, username=username, password=password)
 
-        if user is not None:
+        # If authenticate fails, check if user exists but inactive
+        if user is None:
 
-            if user.role != role:
-                messages.error(request, "Role mismatch!")
-                return redirect("login")
+            try:
+                existing_user = CustomUser.objects.get(username=username)
 
-            if not user.is_active:
-                messages.error(request, "Account is inactive")
-                return redirect("login")
+                if not existing_user.is_active:
+                    messages.error(request, "Account is inactive")
+                    return redirect("login")
 
-            login(request, user)
+            except CustomUser.DoesNotExist:
+                pass
 
-            if role == "admin":
-                return redirect("admin_dashboard")
-            elif role == "faculty":
-                return redirect("faculty_dashboard")
-            elif role == "student":
-                return redirect("student_dashboard")
-
-        else:
             messages.error(request, "Invalid credentials")
+            return redirect("login")
+
+        # Role check
+        if user.role != role:
+            messages.error(request, "Role mismatch!")
+            return redirect("login")
+        
+        # if user is not None:
+
+        #     if user.role != role:
+        #         messages.error(request, "Role mismatch!")
+        #         return redirect("login")
+
+        #     if not user.is_active:
+        #         messages.error(request, "Account is inactive")
+        #         return redirect("login")
+
+        login(request, user)
+
+        if role == "admin":
+            return redirect("admin_dashboard")
+        elif role == "faculty":
+            return redirect("faculty_dashboard")
+        elif role == "student":
+            return redirect("student_dashboard")
+
+        # else:
+        #     messages.error(request, "Invalid credentials")
 
     return render(request, "users/login.html")
 
