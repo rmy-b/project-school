@@ -84,9 +84,9 @@
                     <a href="#">Classes & Subjects</a>
                 </li>
 
-                <li>
+                <li class="{% if request.resolver_match.url_name == 'reports_analytics' %}active{% endif %}">
                     <img src="{% static 'student/icons/chart-column.svg' %}" class="menu-icon">
-                    <a href="#">Reports & Analytics</a>
+                    <a href="{% url 'reports_analytics' %}">Reports & Analytics</a>
                 </li>
 
                 {% endif %}

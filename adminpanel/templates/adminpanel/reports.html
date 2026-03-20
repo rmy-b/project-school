@@ -1,0 +1,156 @@
+{% extends "student/layout.html" %}
+{% load static %}
+
+{% block student_content %}
+
+<link rel="stylesheet" href="{% static 'adminpanel/css/reports.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="reports-container">
+
+<h2>Reports & Analytics</h2>
+<p class="page-desc">Analyze class performance and at-risk students</p>
+
+<form method="GET" class="class-filter">
+
+<div class="filter-group">
+<label>Class</label>
+<select name="class" onchange="this.form.submit()">
+{% for c in classes %}
+<option value="{{ c.id }}"
+{% if selected_class.id == c.id %}selected{% endif %}>
+Class {{ c.class_name }}
+</option>
+{% endfor %}
+</select>
+</div>
+
+<div class="filter-group">
+<label>Section</label>
+<select name="section" onchange="this.form.submit()">
+{% for s in sections %}
+<option value="{{ s.id }}"
+{% if selected_section.id == s.id %}selected{% endif %}>
+Section {{ s.section_name }}
+</option>
+{% endfor %}
+</select>
+</div>
+
+<div class="filter-group">
+<label>Exam</label>
+<select name="exam" onchange="this.form.submit()">
+{% for e in exams %}
+<option value="{{ e.id }}"
+{% if selected_exam.id == e.id %}selected{% endif %}>
+{{ e.exam_name }}
+</option>
+{% endfor %}
+</select>
+</div>
+
+</form>
+
+<!-- Cards -->
+
+<div class="report-cards">
+
+<div class="report-card">
+<h4>Overall Pass Rate</h4>
+<h2>{{ overall_pass_rate }}%</h2>
+<div class="card-icon" style="background:#e6f7ee;">
+   <img src="{% static  'adminpanel/icons/tick.svg' %} " >
+</div>
+</div>
+
+<div class="report-card">
+<h4>At-Risk Students</h4>
+<h2>{{ risk_count }}</h2>
+<div class="card-icon" style="background:#e6f7ee;">
+   <img src="{% static  'adminpanel/icons/triangle-alert.svg' %} " >
+   </div>
+<button class="view-btn" onclick="scrollToRisk()">View Students</button>
+</div>
+
+<div class="report-card">
+<h4>Predicted Pass Percentage</h4>
+<h2>{{predicted_pass_rate}}%</h2>
+<div class="card-icon" style="background:#e6f7ee;">
+   <img src="{% static  'adminpanel/icons/predict.svg' %} " >
+</div>
+</div>
+
+</div>
+
+
+<!-- Graphs -->
+
+<div class="graph-section">
+
+<div class="graph-card">
+<h3>Pass Rate by Subject</h3>
+<canvas id="passChart"></canvas>
+</div>
+
+<div class="graph-card">
+<h3>At-Risk Students by Subject</h3>
+<canvas id="riskChart"></canvas>
+</div>
+
+</div>
+
+
+<!-- Risk Table -->
+
+<div class="risk-table-section" id="riskTable">
+
+<h3>At-Risk Students</h3>
+
+<table class="risk-table">
+
+<thead>
+<tr>
+<th>Roll No</th>
+<th>Name</th>
+<th>Subject</th>
+<th>Marks</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for r in risk_students %}
+
+<tr>
+<td>{{ r.roll }}</td>
+<td>{{ r.name }}</td>
+<td>{{ r.subject }}</td>
+<td>{{ r.marks }}</td>
+</tr>
+
+{% empty %}
+
+<tr>
+<td colspan="4">No Risk Students</td>
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+
+<script>
+const passChartData = JSON.parse('{{ pass_chart|safe }}');
+const riskChartData = JSON.parse('{{ risk_chart|safe }}');
+</script>
+
+
+<script src="{% static 'adminpanel/js/reports.js' %}"></script>
+
+{% endblock %}
