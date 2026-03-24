@@ -1,0 +1,186 @@
+{% extends "student/layout.html" %}
+{% load static %}
+
+{% block student_content %}
+
+<link rel="stylesheet" href="{% static 'adminpanel/css/manage_classes.css' %}">
+
+<div class="page-header">
+
+    <div class="header-left">
+        <h2>Classes & Subjects</h2>
+        <p>Manage classes, sections, and subjects</p>
+    </div>
+
+    <div style="display:flex; gap:10px;">
+        <a href="{% url 'export_classes_excel' %}" class="export-btn">
+            Export
+        </a>
+
+        <button id="addClassBtn">+ Add Class</button>
+    </div>
+
+</div>
+
+<div class="class-container">
+
+{% for class in classes %}
+
+<div class="class-card">
+
+    <div class="class-header">
+        <h3>Class {{ class.class_name }}</h3>
+    </div>
+
+    <!-- Sections -->
+    <div class="section-area">
+
+        <div class="title-row">
+            <p class="title">Sections</p>
+
+            <button class="manage-section-btn"
+                    data-class-id="{{ class.id }}"
+                    data-sections="{% for s in class.section_set.all %}{{ s.section_name }},{% endfor %}">
+                + Manage Sections
+            </button>
+        </div>
+
+        <div class="chips section-chips">
+            {% for section in class.section_set.all %}
+                <a href="{% url 'class_section_detail' class.id section.id %}" class="chip-link">
+                    <span class="chip">{{ section.section_name }}</span>
+                </a>
+            {% endfor %}
+        </div>
+
+    </div>
+
+    <!-- Subjects -->
+    <div class="subject-area">
+
+        <div class="title-row">
+            <p class="title">Subjects</p>
+
+            <button class="manage-subject-btn"
+                    data-class-id="{{ class.id }}"
+                    data-subjects="{% for s in class.subject_set.all %}{{ s.subject_name }},{% endfor %}">
+                + Manage Subjects
+            </button>
+        </div>
+
+        <div class="chips subject-chips">
+            {% for subject in class.subject_set.all %}
+                <span class="chip">{{ subject.subject_name }}</span>
+            {% endfor %}
+        </div>
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+<!-- ADD CLASS POPUP -->
+<div id="addClassPopup" class="popup">
+    <div class="popup-content">
+        <span class="popup-close" onclick="closeAddClassPopup()">X</span>
+
+        <h3>Add Class</h3>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <input type="hidden" name="action" value="add_class">
+
+            <label>Class Name</label>
+            <input type="text" name="class_name" required>
+
+            <button type="submit" class="popup-submit">
+                Add Class
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- MANAGE SECTIONS POPUP -->
+<div id="sectionPopup" class="popup">
+    <div class="popup-content">
+        <h3>Manage Sections</h3>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <input type="hidden" name="action" value="manage_sections">
+            <input type="hidden" name="class_id" id="sectionClassId">
+
+            <div class="checkbox-group">
+
+                <label><input type="checkbox" name="sections" value="A"> A</label>
+                <label><input type="checkbox" name="sections" value="B"> B</label>
+                <label><input type="checkbox" name="sections" value="C"> C</label>
+                <label><input type="checkbox" name="sections" value="D"> D</label>
+                <label><input type="checkbox" name="sections" value="E"> E</label>
+                <label><input type="checkbox" name="sections" value="F"> F</label>
+                
+            </div>
+
+            <div class="popup-actions">
+                <button type="button" onclick="closeSectionPopup()">Cancel</button>
+                <button type="submit">Save Changes</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<!-- MANAGE SUBJECTS POPUP -->
+<div id="subjectPopup" class="popup">
+    <div class="popup-content">
+        <h3>Manage Subjects</h3>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <input type="hidden" name="action" value="manage_subjects">
+            <input type="hidden" name="class_id" id="subjectClassId">
+
+            <div class="checkbox-group">
+
+                <label><input type="checkbox" name="subjects" value="English"> English</label>
+                <label><input type="checkbox" name="subjects" value="Tamil"> Tamil</label>
+                <label><input type="checkbox" name="subjects" value="Maths"> Maths</label>
+                <label><input type="checkbox" name="subjects" value="Science"> Science</label>
+                <label><input type="checkbox" name="subjects" value="Social"> Social</label>
+                
+            </div>
+
+            <div class="popup-actions">
+                <button type="button" onclick="closeSubjectPopup()">Cancel</button>
+                <button type="submit">Save</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<!-- DELETE CONFIRM POPUP -->
+<div id="confirmPopup" class="popup">
+    <div class="popup-content">
+
+        <h3>Confirm Action</h3>
+
+        <p id="confirmMessage"></p>
+
+        <div class="popup-actions">
+            <button type="button" onclick="closeConfirmPopup()">Cancel</button>
+            <button type="button" id="confirmOkBtn">OK</button>
+        </div>
+
+    </div>
+</div>
+
+</div>
+
+<script src="{% static 'adminpanel/js/manage_classes.js' %}"></script>
+
+{% endblock %}

@@ -1,0 +1,265 @@
+/* PAGE BACKGROUND */
+body{
+    background:#f5f1ea;
+    font-family: 'Inter', sans-serif;
+}
+
+/* HEADER */
+.page-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin:18px 0 26px 0;
+}
+
+.header-left h2{
+    font-size:24px;
+    font-weight:600;
+    margin:20;
+}
+
+.header-left p{
+    font-size:14px;
+    color:#7c7c7c;
+}
+
+/* ADD BUTTON */
+#addClassBtn{
+    background:#c78608;
+    color:white;
+    border:none;
+    padding:10px 16px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:500;
+    transition:all 0.2s ease;
+}
+
+#addClassBtn:hover{
+    background:#b7791f;
+}
+
+/* GRID */
+.class-container{
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:24px; /* slightly tighter */
+}
+
+/* CARD */
+.class-card{
+    background:#f8f8f8;
+    padding:18px 20px; 
+    border-radius:14px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.04);
+    transition:all 0.2s ease;
+}
+
+.class-card:hover{
+    transform:translateY(-2px);
+    box-shadow:0 8px 18px rgba(0,0,0,0.06);
+}
+
+/* CLASS TITLE  */
+.class-header h3{
+    font-size:17px;
+    font-weight:600;
+    margin-bottom:12px;
+}
+
+/* SECTION / SUBJECT AREA */
+.section-area,
+.subject-area{
+    margin-top:14px; 
+}
+
+/* TITLE ROW */
+.title-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:6px;
+}
+
+.title{
+    font-size:14px;
+    color:#8a8a8a; 
+    font-weight:600;
+}
+
+/* ACTION BUTTONS */
+.manage-section-btn,
+.manage-subject-btn{
+    background:transparent;
+    border:none;
+    font-size:14px;
+    cursor:pointer;
+    color:#1f2937;
+    font-weight: 500;
+    padding:4px 8px;
+    border-radius:6px;
+    transition:all 0.2s ease;
+}
+
+/*HOVER EXACT STYLE */
+.manage-section-btn:hover,
+.manage-subject-btn:hover{
+    background:#a86a00;
+    color:white;
+}
+
+/* CHIPS COMMON */
+.chips{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+}
+
+/* SECTIONS  */
+.section-chips .chip{
+    background:#f6e4c5;  
+    color:#a86a00;
+    padding:5px 10px;
+    font-size:12px;
+    border-radius:8px; 
+}
+
+.section-chips .chip:hover{
+    background:#c78608;
+    color:white;
+}
+
+/* SUBJECTS (FIXED COLOR) */
+.subject-chips .chip{
+    background:#eeeeee;   
+    color:#555;
+    padding:5px 10px;
+    font-size:12px;
+    border-radius:14px;
+}
+
+/* POPUP */
+.popup {
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0, 0, 0, 0.4);
+    backdrop-filter:blur(4px);
+    justify-content:center;
+    align-items:center;
+    z-index:1000;
+}
+
+.popup-content {
+    background:#ffffff;
+    padding:24px;
+    border-radius:14px;
+    width:360px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.15);
+    animation:popupFade 0.2s ease;
+}
+
+@keyframes popupFade{
+    from{
+        transform:scale(0.95);
+        opacity:0;
+    }
+    to{
+        transform:scale(1);
+        opacity:1;
+    }
+}
+
+.popup-close {
+    float:right;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.checkbox-group {
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:10px;
+}
+
+/* HIDE DEFAULT */
+.checkbox-group input[type="checkbox"]{
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #d89b1d;
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+}
+
+/* CHECKED STATE */
+.checkbox-group input[type="checkbox"]:checked{
+    background-color: #d89b1d;
+}
+
+/* WHITE TICK */
+.checkbox-group input[type="checkbox"]:checked::after{
+    content: "✔";
+    position: absolute;
+    color: white;
+    font-size: 11px;
+    top: -2px;
+    left: 2px;
+}
+
+.checkbox-group label{
+    display: flex;
+    align-items: center;   
+    gap: 6px;              
+    cursor: pointer;
+}
+
+.popup-actions {
+    margin-top:20px;
+    display:flex;
+    justify-content:space-between;
+}
+
+.popup-actions button{
+    padding:8px 14px;
+    border-radius:8px;
+    border:none;
+    cursor:pointer;
+}
+
+.popup-actions button:first-child{
+    background:#e5e7eb;
+}
+
+.popup-actions button:last-child{
+    background:#d89b1d;
+    color:white;
+}
+
+#confirmMessage{
+    margin-top:10px;
+    font-size:14px;
+}
+
+.chip-link{
+    text-decoration:none;
+}
+
+.export-btn{
+    background:#c78608;
+    color:white;
+    padding:10px 16px;
+    border-radius:8px;
+    text-decoration:none;
+    font-weight:500;
+    transition:all 0.2s ease;
+}
+
+.export-btn:hover{
+    background:#b7791f;
+}
