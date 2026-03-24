@@ -27,11 +27,7 @@ label: "Pass Rate %",
 data: passValues,
 backgroundColor: "#c47a00",
 hoverBackgroundColor:"#e39500",
-<<<<<<< HEAD
 borderRadius:6
-=======
-borderRadius:4
->>>>>>> ef58fd8ba980ad594610c0db9ac22575ca82252e
 }]
 
 },
@@ -83,11 +79,7 @@ const riskValues = riskChartData.map(item => item.risk);
 new Chart(document.getElementById("riskChart"), {
 
 
-<<<<<<< HEAD
-type:'bar',
-=======
 type:'line',
->>>>>>> ef58fd8ba980ad594610c0db9ac22575ca82252e
 options:{
 indexAxis:'x'
 },
@@ -103,11 +95,7 @@ data:riskValues,
 
 backgroundColor:"#c47a00",
 hoverBackgroundColor:"#c47a00",
-<<<<<<< HEAD
-borderRadius:5
-=======
 borderRadius:4
->>>>>>> ef58fd8ba980ad594610c0db9ac22575ca82252e
 
 }]
 

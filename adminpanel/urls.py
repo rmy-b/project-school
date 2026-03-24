@@ -19,6 +19,9 @@ urlpatterns = [
 
 
 
+
+
+
 path("manage_faculty/", manage_faculty,name="manage_faculty"),
 path("faculty-active-status/", toggle_faculty_status, name="toggle_faculty_status"),
 path("update-faculty/" , update_faculty,name="update_faculty"),

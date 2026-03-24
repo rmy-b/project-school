@@ -14,6 +14,12 @@ h2{
     font-size:14px;
 }
 
+.faculty-header{
+    display: flex;
+    justify-content: space-between; /* pushes buttons left & right */
+    align-items: center;
+    margin-bottom: 15px;
+}
 /* Add Button */
 
 .add-btn{
@@ -31,7 +37,40 @@ h2{
     background:#a86300;
 }
 
+.upload-btn {
+    display: inline-block;
+    padding: 8px 14px;
+    background: #fff4e6;
+    color: #c47a00;
+    border: 1px solid #c47a00;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 15px;
+    margin-left: 10px;
+    transition: 0.3s;
+}
 
+.upload-btn:hover {
+    background: #c47a00;
+    color: white;
+}
+
+.upload-form {
+    margin-top: 15px;
+    padding: 15px;
+    background: #f9f9f9;
+    border: 1px dashed #ccc;
+    border-radius: 8px;
+}
+
+.upload-form input[type="file"] {
+    margin-top: 8px;
+    margin-bottom: 10px;
+}
+
+.upload-form button {
+    padding: 6px 12px;
+}
 /* Table */
 
 .faculty-table{
@@ -287,6 +326,8 @@ h2{
     margin-bottom:14px;
     border-radius:6px;
     font-size:14px;
+    opacity: 1;
+    transition: opacity 0.5 ease;
 }
 
 .message.error{

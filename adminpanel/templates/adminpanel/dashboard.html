@@ -1,8 +1,109 @@
 {% extends "student/layout.html" %}
+{% load static %}
 
 {% block student_content %}
 
-<h2>Admin Dashboard</h2>
-<p>Admin content here</p>
+<link rel="stylesheet" href="{% static 'adminpanel/css/dashboard.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="dashboard">
+
+<h2>Admin Overview</h2>
+<p class="subtitle">Overview of the student performance monitoring system</p>
+
+<!-- ========================= -->
+<!-- TOP CARDS -->
+<!-- ========================= -->
+
+<div class="top-cards">
+
+<div class="card">
+<h4>Students</h4>
+<h2>{{ total_students }}</h2>
+<div class="card-icon" style="background:#e6f7ee;">
+   <img src="{% static  'adminpanel/icons/user-yel.svg' %} " >
+</div>
+<a href="#/adminpanel/manage-students" class="btn">Manage Students</a>
+</div>
+
+<div class="card">
+<h4>Faculty</h4>
+<h2>{{ total_faculty }}</h2>
+<div class="card-icon" style="background:#e6f7ee;">
+   <img src="{% static  'adminpanel/icons/user-cog.svg' %} " >
+</div>
+<a href="/adminpanel/manage_faculty" class="btn">Manage Faculty</a>
+</div>
+
+<div class="card">
+<h4>Classes</h4>
+<h2>{{ total_classes }}</h2>
+<div class="card-icon" style="background:#e6f7ee;">
+   <img src="{% static  'adminpanel/icons/class-green.svg' %} " >
+</div>
+<a href="#/adminpanel/classes" class="btn">Manage Classes</a>
+</div>
+
+<div class="card">
+<h4>At-Risk Students</h4>
+<h2>{{ overall_risk }}</h2>
+<div class="card-icon" style="background:#e6f7ee;">
+   <img src="{% static  'adminpanel/icons/triangle-alert.svg' %} " >
+</div>
+<a href="/adminpanel/reports" class="btn">View Report</a>
+</div>
+
+</div>
+
+<!-- ========================= -->
+<!-- SECOND ROW -->
+<!-- ========================= -->
+
+<div class="summary-cards">
+
+<div class="card">
+<h4>Overall Pass Rate</h4>
+<h2>{{ overall_pass_rate }}%</h2>
+<div class="card-icon" style="background:#e6f7ee;">
+   <img src="{% static  'adminpanel/icons/tick.svg' %} " >
+</div>
+</div>
+
+<div class="card">
+<h4>Total At-Risk Students</h4>
+<h2>{{ overall_risk }}</h2>
+<div class="card-icon" style="background:#e6f7ee;">
+   <img src="{% static  'adminpanel/icons/triangle-alert.svg' %} " >
+</div>
+</div>
+
+</div>
+
+<!-- ========================= -->
+<!-- GRAPHS -->
+<!-- ========================= -->
+
+<div class="graphs">
+
+<div class="graph-card">
+<h3>Pass Rate by Class</h3>
+<canvas id="passChart"></canvas>
+</div>
+
+<div class="graph-card">
+<h3>Risk Students by Class</h3>
+<canvas id="riskChart"></canvas>
+</div>
+
+</div>
+
+</div>
+
+<script>
+const passChartData = JSON.parse('{{ pass_chart|safe }}');
+const riskChartData =JSON.parse('{{ risk_chart|safe }}');
+</script>
+
+<script src="{% static 'adminpanel/js/dashboard.js' %}"></script>
 
 {% endblock %}

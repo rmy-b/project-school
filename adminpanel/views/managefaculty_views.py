@@ -4,11 +4,16 @@ from details.models import Faculty
 from users.models import CustomUser
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+import pandas as pd
 
 @login_required
 def manage_faculty(request):
 
     if request.method == "POST":
+
+        if "bulk_upload" in request.POST:
+            handle_bulk_upload(request)
+            return redirect('manage_faculty')   
 
         name = request.POST.get("name")
         qualification = request.POST.get("qualification")
@@ -48,6 +53,55 @@ def manage_faculty(request):
     }
 
     return render(request, "adminpanel/manage_faculty.html", context)
+
+def handle_bulk_upload(request):
+
+    file = request.FILES.get("file")
+
+    if not file:
+        messages.error(request, "No file uploaded")
+        return
+
+    try:
+        import pandas as pd
+
+        if file.name.endswith('.csv'):
+            df = pd.read_csv(file)
+        else:
+            df = pd.read_excel(file)
+
+        success_count = 0
+
+        for index, row in df.iterrows():
+
+            username = str(row.get('username', '')).strip()
+            if username == '' or username.lower() == 'nan':
+                continue
+
+            # Avoid duplicate users
+            if CustomUser.objects.filter(username=username).exists():
+                continue
+
+            # Create user
+            user = CustomUser.objects.create_user(
+                username=username,
+                password=str(row['password']),
+                role='faculty'
+            )
+
+            # Create faculty
+            Faculty.objects.create(
+                user=user,
+                name=row['name'],
+                qualification=row['qualification']
+            )
+
+            success_count += 1
+
+        messages.success(request, f"{success_count} Faculties uploaded successfully")
+
+    except Exception as e:
+        messages.error(request, f"Error: {str(e)}")
 
 #UPDATE FACULTY
 @login_required

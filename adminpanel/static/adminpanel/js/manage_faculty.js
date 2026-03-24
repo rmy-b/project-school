@@ -154,3 +154,35 @@ const cancelDeleteBtn = document.querySelector(".cancel-delete-btn");
 cancelDeleteBtn.onclick = function(){
 deleteModal.style.display = "none";
 }
+
+function toggleUploadForm() {
+    const form = document.getElementById("uploadForm");
+
+    if (form.style.display === "none") {
+        form.style.display = "block";
+    } else {
+        form.style.display = "none";
+    }
+}
+
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    setTimeout(function () {
+
+        const messages = document.querySelectorAll('.message');
+
+        messages.forEach(function(msg) {
+
+            msg.style.transition = "opacity 0.5s ease";
+            msg.style.opacity = "0";
+
+            setTimeout(function() {
+                msg.remove();
+            }, 500);
+
+        });
+
+    }, 3000); // 3 seconds
+
+});
