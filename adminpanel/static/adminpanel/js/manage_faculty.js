@@ -15,6 +15,14 @@ window.onclick = function(event) {
         modal.style.display = "none";
     }
 }
+
+const uploadModal = document.getElementById("uploadModal");
+
+window.addEventListener("click", function (event) {
+    if (event.target === uploadModal) {
+        uploadModal.style.display = "none";
+    }
+});
 const toggles = document.querySelectorAll(".faculty-toggle");
 
 toggles.forEach(toggle => {
@@ -164,7 +172,25 @@ function toggleUploadForm() {
         form.style.display = "none";
     }
 }
+document.addEventListener("DOMContentLoaded", function () {
 
+    const modal = document.getElementById("uploadModal");
+    const openBtn = document.getElementById("openUpload");
+
+    // OPEN MODAL
+    openBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        modal.style.display = "flex";
+    });
+
+    // CLOSE WHEN CLICK OUTSIDE
+    window.addEventListener("click", function (e) {
+        if (e.target === modal) {
+            modal.style.display = "none";
+        }
+    });
+
+});
 
 document.addEventListener("DOMContentLoaded", function () {
 

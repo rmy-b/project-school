@@ -32,6 +32,7 @@
     flex-direction: column;
     justify-content: space-between;
     min-height: 120px;
+    transition: all 0.3s ease;
 }.card-icon {
     position: absolute;
     top: 15px;
@@ -43,9 +44,9 @@
     justify-content: center;
     border-radius: 10px;
 }
-.card:hover .card-icon {
-    transform: scale(1.1);
-    transition: 0.3s;
+.card:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.12);
 }
 .card-icon img {
     width: 20px;
@@ -57,7 +58,7 @@
     color: #555;
     font-size: 14px;
     font-weight: 600;
-}
+} 
 
 .card h2 {
     margin: 2px 0 6px 0;
@@ -94,13 +95,16 @@
 }
 .graph-card {
     background: white;
-    padding: 15px;
+    padding: 20px;
     border-radius: 10px;
-    height: 340px;   /* FIX HEIGHT */
+    height: 350px;   /* FIX HEIGHT */
     position: relative;
+    
 }
 
-/* FIX CHART SIZE */
+
+
+
 .graph-card canvas {
     height: 100% !important;
     width: 100% !important;

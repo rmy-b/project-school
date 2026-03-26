@@ -95,7 +95,8 @@ data:riskValues,
 
 backgroundColor:"#c47a00",
 hoverBackgroundColor:"#c47a00",
-borderRadius:4
+borderRadius:4,
+tension:0.5
 
 }]
 

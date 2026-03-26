@@ -1,42 +1,154 @@
-// PASS CHART
-const passLabels = passChartData.map(i => i.class);
-const passValues = passChartData.map(i => i.rate);
+document.addEventListener("DOMContentLoaded", function () {
 
-new Chart(document.getElementById("passChart"), {
-    type: "bar",
-    data: {
-        labels: passLabels,
-        datasets: [{
-            data: passValues,
-            backgroundColor: "#c47a00",
-            barPercentage: 0.5
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false
-    }
-});
+    // ================= PASS CHART =================
+    const passCtx = document.getElementById("passChart").getContext("2d");
+
+    new Chart(passCtx, {
+        type: "bar",
+        data: {
+            labels: passChartData.map(i => i.class),
+            datasets: [{
+                label: "Pass %",
+                data: passChartData.map(i => i.rate),
+                backgroundColor: "#c47a00",
+                borderRadius: 6,
+                barThickness: 50
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            animation: {
+                duration: 1200,
+                easing: "easeOutQuart"
+            },
+
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: "#fff",
+                    titleColor: "#333",
+                    bodyColor: "#c47a00",
+                    borderColor: "#eee",
+                    borderWidth: 1
+                }
+            },
+
+            layout: {
+                padding: {
+                    top: 10,
+                    bottom: 50,
+                    left: 10,
+                    right: 10
+                }
+            },
+
+            scales: {
+                x: {
+                    offset: true,   
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        color: "#666",
+                        padding: 8
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        stepSize: 20,
+                        color: "#666"
+                    },
+                    grid: {
+                        color: "#eee"
+                    }
+                }
+            }
+        }
+    });
 
 
-// RISK CHART (BAR is better than line here)
-const riskLabels = riskChartData.map(i => i.class);
-const riskValues = riskChartData.map(i => i.risk);
+    // ================= RISK CHART =================
+    const riskCtx = document.getElementById("riskChart").getContext("2d");
 
-new Chart(document.getElementById("riskChart"), {
-    type: "line",
-    data: {
-        labels: riskLabels,
-        datasets: [{
-            data: riskValues,
-            backgroundColor: "#c4a700",
-            borderColor:"#bb1010",
-            barPercentage: 0.5
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        
-    }
+    // Gradient fill
+    const gradient = riskCtx.createLinearGradient(0, 0, 0, 300);
+    gradient.addColorStop(0, "rgba(196,122,0,0.35)");
+    gradient.addColorStop(1, "rgba(196,122,0,0)");
+
+    new Chart(riskCtx, {
+        type: "line",
+        data: {
+            labels: riskChartData.map(i => i.class),
+            datasets: [{
+                label: "At Risk",
+                data: riskChartData.map(i => i.risk),
+                borderColor: "#c47a00",
+                backgroundColor: gradient,
+                fill: true,
+                tension: 0.45,  
+                pointRadius: 5,
+                pointBackgroundColor: "#c47a00",
+                pointBorderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            animation: {
+                duration: 1400,
+                easing: "easeOutQuart"
+            },
+
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: "#fff",
+                    titleColor: "#333",
+                    bodyColor: "#c47a00",
+                    borderColor: "#eee",
+                    borderWidth: 1,
+                    displayColors: true
+                }
+            },
+
+            layout: {
+                padding: {
+                    top: 10,
+                    bottom: 50,
+                    left: 10,
+                    right: 10
+                }
+            },
+
+            scales: {
+                x: {
+                    offset: true,   
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        color: "#666",
+                        padding: 8
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    max:25,
+                    ticks: {
+                        stepSize: 5,
+                        color: "#666"
+                    },
+                    grid: {
+                        color: "#eee"
+                    }
+                }
+            }
+        }
+    });
+
 });

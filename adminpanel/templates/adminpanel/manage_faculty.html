@@ -12,7 +12,7 @@
     <div class="faculty-header">
        
         <button id="openAddModal" class="add-btn">+ Add Faculty</button>
-    <button class="upload-btn" onclick="toggleUploadForm()">
+       <button class="upload-btn" id="openUpload">
     Upload Faculty 
 </button>
     </div>
@@ -120,18 +120,20 @@
     </div>
 
 </div>
-<div id="uploadForm" class="upload-form" style="display:none;">
+<div id="uploadModal" class="modal">
 
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
+    <div class="modal-content">
 
-        <label>Select File (CSV / Excel)</label>
-        <input type="file" name="file" required>
+        <h3>Upload Faculty</h3>
 
-        <button type="submit" name="bulk_upload" class="btn">
-            Upload
-        </button>
-    </form>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" name="file" required>
+
+            <button type="submit" name="bulk_upload">Upload</button>
+        </form>
+
+    </div>
 
 </div>
 <div id="editFacultyModal" class="modal">
