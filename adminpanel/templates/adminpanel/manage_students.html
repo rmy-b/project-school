@@ -32,8 +32,10 @@
         </option>
         {% endfor %}
     </select>
-    
-    <button id="addStudentBtn" type="button">+ Add Student</button>
+    <div style="display: flex; gap: 10px;">
+        <button id="addStudentBtn" type="button">+ Add Student</button>
+        <button id="uploadBtn" type="button">Upload Excel</button>
+    </div>
 </div>
 
 
@@ -130,6 +132,31 @@
         </form>
     </div>
 </div>
+
+<div id="uploadPopup" class="popup">
+    <div class="popup-content">
+        <span class="popup-close" onclick="closeUploadPopup()">X</span>
+        <h3>Upload Students</h3>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" name="excel_file" accept=".xlsx" required>
+
+            <button type="submit" name="upload_excel" class="popup-submit">
+                Upload
+            </button>
+        </form>
+    </div>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert {{message.tags}}">
+            <span>{{message}}</span>
+        </div>
+    {% endfor %}
+{% endif %}
+
 
 <table border="1" width="100%">
     <thead>

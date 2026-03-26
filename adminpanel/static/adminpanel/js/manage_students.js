@@ -12,9 +12,9 @@ const popupSection = document.getElementById("popupSection");
 const selectedText = document.getElementById("selectedClassSection");
 
 
-// --------------------
+
 // CLASS CHANGE
-// --------------------
+
 
 classDropdown.addEventListener("change", function(){
 
@@ -42,10 +42,10 @@ classDropdown.addEventListener("change", function(){
 });
 
 
-// --------------------
+
 // SECTION CHANGE
 // AUTO FILTER
-// --------------------
+
 
 sectionDropdown.addEventListener("change", function(){
 
@@ -66,9 +66,9 @@ sectionDropdown.addEventListener("change", function(){
 });
 
 
-// --------------------
+
 // OPEN POPUP
-// --------------------
+
 
 addStudentBtn.addEventListener("click", function(){
 
@@ -101,9 +101,8 @@ addStudentBtn.addEventListener("click", function(){
 });
 
 
-// --------------------
 // CLOSE POPUP  
-// --------------------
+
 
 function closePopup(){
 
@@ -111,9 +110,9 @@ document.getElementById("studentPopup").style.display = "none";
 
 }
 
-// =============================
+
 // EDIT STUDENT POPUP
-// =============================
+
 
 const editPopup = document.getElementById("editStudentPopup");
 
@@ -167,9 +166,9 @@ newPasswordField.style.display = "block";
 });
 
 
-// =============================
+
 // DELETE STUDENT POPUP
-// =============================
+
 
 const deletePopup = document.getElementById("deletePopup");
 const deleteStudentId = document.getElementById("deleteStudentId");
@@ -196,9 +195,9 @@ deletePopup.style.display = "none";
 }
 
 
-// =============================
+
 // TOGGLE ACTIVE / INACTIVE
-// =============================
+
 
 document.querySelectorAll(".status-toggle").forEach(toggle => {
 
@@ -232,27 +231,53 @@ return document.querySelector('[name=csrfmiddlewaretoken]').value;
 
 }
 
-// =============================
+
+// AUTO HIDE SUCCESS MESSAGE
+setTimeout(() => {
+    const alerts = document.querySelectorAll(".alert");
+    alerts.forEach(alert => {
+        alert.style.display = "none";
+    })
+}, 5000);
+
+
+// UPLOAD POPUP
+
+const uploadBtn = document.getElementById("uploadBtn");
+const uploadPopup = document.getElementById("uploadPopup");
+
+uploadBtn.addEventListener("click", function(){
+    uploadPopup.style.display = "flex";
+});
+
+function closeUploadPopup(){
+    uploadPopup.style.display = "none";
+}
+
 // CLOSE POPUP WHEN CLICK OUTSIDE
-// =============================
+
 
 window.addEventListener("click", function(event){
 
 const addPopup = document.getElementById("studentPopup");
 const editPopup = document.getElementById("editStudentPopup");
 const deletePopup = document.getElementById("deletePopup");
+const uploadPopup = document.getElementById("uploadPopup");
 
 if(event.target === addPopup){
-addPopup.style.display = "none";
+    addPopup.style.display = "none";
 }
 
 if(event.target === editPopup){
-editPopup.style.display = "none";
+    editPopup.style.display = "none";
 }
 
 if(event.target === deletePopup){
-deletePopup.style.display = "none";
+    deletePopup.style.display = "none";
+}
+
+if(event.target === uploadPopup){
+    uploadPopup.style.display = "none";
 }
 
 });
-
