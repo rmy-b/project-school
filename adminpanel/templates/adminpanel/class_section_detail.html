@@ -1,0 +1,138 @@
+{% extends "student/layout.html" %}
+{% load static %}
+
+{% block student_content %}
+
+<link rel="stylesheet" href="{% static 'adminpanel/css/class_section_detail.css' %}">
+
+<!-- HEADER -->
+<div class="top-bar">
+    <a href="{% url 'manage_classes' %}" class="back-link">← Back to Classes</a>
+    <h2>Class {{ class_obj.class_name }} - Section {{ section.section_name }}</h2>
+    <p class="subtitle">Manage subjects and faculty assignments</p>
+</div>
+
+<!-- CLASS INCHARGE -->
+<div class="incharge-card">
+
+    <div>
+        <p class="label">Class Teacher (In-charge)</p>
+        <h3>
+            {% if class_incharge %}
+                {{ class_incharge.faculty.name }}
+            {% else %}
+                Not Assigned
+            {% endif %}
+        </h3>
+    </div>
+
+    <img src="{% static 'adminpanel/icons/pencil.svg' %}"
+        class="edit-icon edit-btn"
+        data-subject=""
+        data-incharge="true"
+        data-faculty="{% if class_incharge %}{{ class_incharge.faculty.id }}{% endif %}">
+
+</div>
+
+{% if error %}
+    <div id="errorBox"class="error-box">
+        {{ error }}
+    </div>
+{% endif %}
+
+<!-- SUBJECT TABLE -->
+<div class="table-card">
+
+    <table>
+        <thead>
+            <tr>
+                <th>Subject Name</th>
+                <th>Handled By</th>
+                <th class="action-col">Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+        {% for subject in subjects %}
+
+        <tr>
+
+            <!-- SUBJECT -->
+            <td>{{ subject.subject_name }}</td>
+
+            <!-- FACULTY -->
+            <td>
+                {% for assign in assignments %}
+                    {% if assign.subject.id == subject.id %}
+                        {{ assign.faculty.name }}
+                    {% endif %}
+                {% empty %}
+                    Not Assigned
+                {% endfor %}
+            </td>
+
+            <!-- EDIT ICON -->
+            <td class="action-col">
+                <img src="{% static 'adminpanel/icons/pencil.svg' %}"
+                    class="edit-icon-small edit-btn"
+                    data-subject="{{ subject.id }}"
+                    data-incharge="false"
+                    data-faculty="{% for assign in assignments %}{% if assign.subject.id == subject.id %}{{ assign.faculty.id }}{% endif %}{% endfor %}">
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+        </tbody>
+    </table>
+
+</div>
+
+<!-- EDIT POPUP -->
+<div id="editPopup" class="popup">
+  <div class="popup-content">
+
+    <h3 id="popupTitle">Edit Assignment</h3>
+
+    <form method="POST">
+      {% csrf_token %}
+
+      <input type="hidden" name="action" value="assign_faculty">
+      <input type="hidden" name="class_id" value="{{ class_obj.id }}">
+      <input type="hidden" name="section_id" value="{{ section.id }}">
+      <input type="hidden" name="subject_id" id="popupSubjectId">
+      <input type="hidden" name="is_class_incharge" id="popupIsIncharge">
+
+      <label>Select Faculty</label>
+      
+        <div class="custom-dropdown">
+            <div class="dropdown-selected" id="dropdownSelected">
+                Select Faculty
+            </div>
+
+            <div class="dropdown-options" id="dropdownOptions">
+                {% for f in faculty_list %}
+                    <div class="dropdown-item" data-value="{{ f.id }}">
+                        {{ f.name }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <input type="hidden" name="faculty_id" id="facultyInput" required>
+
+      <div class="popup-actions">
+        <button type="button" onclick="closePopup()">Cancel</button>
+        <button type="submit">Save</button>
+      </div>
+
+    </form>
+
+  </div>
+</div>
+
+<script src="{% static 'adminpanel/js/class_section_detail.js' %}"></script>
+
+{% endblock %}

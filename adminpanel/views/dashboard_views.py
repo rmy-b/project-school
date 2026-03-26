@@ -2,7 +2,9 @@ from django.shortcuts import render
 from details.models import Class, Section, Student, Faculty, Marks, Exam
 import json
 
+from django.contrib.auth.decorators import login_required
 
+@login_required
 def admin_dashboard(request):
 
     classes = Class.objects.all()
