@@ -3,13 +3,14 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from details.models import Student,Marks,Attendance
 import json
-import nltk
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
-from nltk.stem import PorterStemmer
+import requests
 from collections import defaultdict
 from datetime import datetime
 from django.http import JsonResponse
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def calculate_grade(percentage):
     if percentage >= 90:
@@ -276,6 +277,56 @@ def ai_feedback(request):
 
     return render(request, "student/ai_feedback.html", context)
 
+
+def get_ai_reply(user_message, student_data):
+
+    url = "https://api.groq.com/openai/v1/chat/completions"
+
+    headers = {
+    "Authorization": f"Bearer {os.getenv('GROQ_API_KEY')}",
+    "Content-Type": "application/json"
+    }
+
+    system_prompt = """
+    You are an AI Study Assistant.
+
+    Rules:
+    - Only answer academic and study-related questions.
+    - If the question is unrelated, politely say you can help with studies.
+
+    Response Behaviour(VERY IMPORTANT):
+    - If the user greets(hi, hello, hey) -> respond briefly and naturally like a human.
+    - If the user asks a simple question -> give a short answer(1-3 lines).
+    - If the user asks for tips -> give short bullet points.
+    - If the user asks for analysis -> give structured detailed response with headings.
+    - Do NOT over-explain unnecessarily.
+    - Keep responses clean, readable, and appropriate to the question.
+
+    Style:
+    - Use headings only when needed
+    - Use bullet points for tips
+    - Be friendly and natural
+    """
+
+    payload = {
+        "model": "llama-3.3-70b-versatile",
+        "messages": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": student_data + "\n\n" + user_message}
+        ]
+    }
+
+    response = requests.post(url, headers=headers, json=payload)
+
+    data = response.json()
+
+    print("FULL RESPONSE:", data)
+
+    if "choices" in data:
+        return data["choices"][0]["message"]["content"]
+    else:
+        return "AI error:" + str(data)
+
 @login_required
 def ai_response(request):
 
@@ -394,301 +445,17 @@ def ai_response(request):
     else:
         risk_level = "High"
 
-    #Intent Detection
-    intent, score = detect_intent(user_message)
+    # Prepare student data (PERSONALIZED AI ) 
+    student_data = f"""
+    Student Academic Data:
+    Average Score: {average}%
+    Strong Subject: {highest_subject.subject.subject_name}
+    Weak Subject: {lowest_subject.subject.subject_name}
+    Trend: {trend_direction} ({trend_percentage}%)
+    Risk Level: {risk_level}
+    """
 
-    #Response Generation
-    if score == 0:
-        reply = (
-            "I'm not sure I understood.\n"
-            "You can ask about performance, risk level, improvement, study plan or motivation."
-        )
-    elif score == 1:
-        reply = (
-            f"I think you're asking about {intent.replace('_', ' ')}.\n"
-            "Let me analyze that for you.\n\n"
-        )
-        reply += generate_response(
-            intent,
-            average,
-            highest_subject,
-            lowest_subject,
-            trend_direction,
-            trend_percentage,
-            risk_level,
-            subject_trends
-        )
-    else:
-        reply = generate_response(
-            intent,
-            average,
-            highest_subject,
-            lowest_subject,
-            trend_direction,
-            trend_percentage,
-            risk_level,
-            subject_trends
-        )
+    # Call AI
+    reply = get_ai_reply(user_message, student_data)
 
     return JsonResponse({"reply": reply})
-
-def detect_intent(message):
-
-    stemmer = PorterStemmer()
-    message = message.lower()
-
-    # Phrase-Based Direct Mapping (High Priority)
-    phrase_map = {
-        "how am i doing": "performance_analysis",
-        "am i improving": "performance_analysis",
-        "how is my performance": "performance_analysis",
-        "what about my marks": "performance_analysis",
-        "what is my risk": "risk_level",
-        "risk level": "risk_level",
-        "am i at risk": "risk_level",
-        "how can i improve": "improvement_tips",
-    }
-
-    for phrase, intent in phrase_map.items():
-        if phrase in message:
-            return intent, 3 
-
-    #Preprocess
-    stop_words = set(stopwords.words("english"))
-    words = word_tokenize(message)
-
-    filtered_words = []
-
-    for word in words:
-        if word.isalpha() and word not in stop_words:
-            stemmed_word = stemmer.stem(word)
-            filtered_words.append(stemmed_word)
-
-    #Intent Dictionary
-    intent_keywords = {
-        "performance_analysis": [
-            "analyz", "perform", "progress",
-            "result", "mark", "score", "academ", "trend"
-        ],
-        "study_plan": [
-            "studi", "plan", "schedul",
-            "prepar", "routin"
-        ],
-        "improvement_tips": [
-            "improv", "better", "increas", "tip"
-        ],
-        "weak_subject": [
-            "weak", "low", "struggl",
-            "difficult"
-        ],
-        "strong_subject": [
-            "strong", "best", "highest"
-        ],
-        "motivation": [
-            "sad", "demotiv", "tire", "stress"
-        ],
-        "risk_level": [
-            "risk", "danger", "fail", "drop"
-        ]
-    }
-
-    # Scoring System
-    intent_scores = defaultdict(int)
-
-    for word in filtered_words:
-        for intent, keywords in intent_keywords.items():
-            if word in keywords:
-                intent_scores[intent] += 1
-
-    if intent_scores:
-        best_intent = max(intent_scores, key=intent_scores.get)
-        best_score = intent_scores[best_intent]
-        return best_intent, best_score
-
-    return "unknown", 0
-
-def generate_response(intent, average, highest, lowest,
-                      trend_direction, trend_percentage,
-                      risk_level, subject_trends):
-
-    # Performance Category
-    if average < 60:
-        performance = "poor"
-    elif average < 80:
-        performance = "average"
-    else:
-        performance = "good"
-
-    # Tone Based On Risk
-    if risk_level == "High":
-        tone_intro = "Your academic situation needs immediate attention.\n"
-    elif risk_level == "Moderate":
-        tone_intro = "Your performance is stable but requires improvement.\n"
-    else:
-        tone_intro = "You are performing well overall.\n"
-
-    #Detect Most Improved & Most Declined Subject
-    best_improvement = None
-    worst_decline = None
-
-    if subject_trends:
-        sorted_trends = sorted(subject_trends, key=lambda x: x["difference"])
-
-        worst_decline = sorted_trends[0]
-        best_improvement = sorted_trends[-1]
-
-    
-    # PERFORMANCE ANALYSIS
-    
-    if intent == "performance_analysis":
-
-        response = tone_intro
-        response += (
-            f"\nYour current average is {average}%.\n"
-            f"Compared to the previous exam, you {trend_direction.lower()} "
-            f"by {abs(trend_percentage)}%.\n\n"
-        )
-
-        # Strong warning if heavy decline
-        if trend_percentage <= -10:
-            response += (
-                "There is a significant drop in your overall performance. "
-                "Immediate corrective action is recommended.\n\n"
-            )
-
-        # Subject trends
-        if subject_trends:
-            response += "Subject-level insights:\n"
-
-            for trend in subject_trends:
-                response += (
-                    f"- {trend['subject']}: {trend['status']} "
-                    f"({trend['difference']} marks)\n"
-                )
-
-            response += "\n"
-
-            if best_improvement and best_improvement["difference"] > 0:
-                response += (
-                    f"Great improvement seen in {best_improvement['subject']}.\n"
-                )
-
-            if worst_decline and worst_decline["difference"] < 0:
-                response += (
-                    f"Performance dropped in {worst_decline['subject']}. "
-                    "This subject needs priority focus.\n"
-                )
-
-        response += (
-            f"\nStrongest subject: {highest.subject.subject_name} "
-            f"({highest.total_marks})\n"
-            f"Weakest subject: {lowest.subject.subject_name} "
-            f"({lowest.total_marks})\n\n"
-            f"Current Academic Risk Level: {risk_level}"
-        )
-
-        return response
-
-   
-    # STUDY PLAN
-    
-    elif intent == "study_plan":
-
-        if risk_level == "High":
-            return (
-                "You need a strict recovery plan.\n"
-                "Study at least 3 focused hours daily.\n"
-                "Prioritize weak subjects and practice previous mistakes.\n"
-                "Avoid distractions completely."
-            )
-
-        elif risk_level == "Moderate":
-            return (
-                "Follow a structured 2-hour daily revision schedule.\n"
-                "Focus more on weaker subjects.\n"
-                "Take weekly self-assessment tests."
-            )
-
-        else:
-            return (
-                "Maintain consistency with 1–2 hours of daily revision.\n"
-                "Start advanced problem-solving practice for excellence."
-            )
-
-    
-    # RISK LEVEL
-    
-    elif intent == "risk_level":
-
-        if risk_level == "High":
-            advice = "Immediate improvement is necessary to avoid academic failure."
-        elif risk_level == "Moderate":
-            advice = "You are not in danger, but improvement is needed."
-        else:
-            advice = "You are in a safe academic zone. Maintain consistency."
-
-        return (
-            f"Your current academic risk level is {risk_level}.\n"
-            f"Overall trend: {trend_direction} ({trend_percentage}%).\n"
-            f"{advice}"
-        )
-
-    
-    # IMPROVEMENT TIPS
-    
-    elif intent == "improvement_tips":
-
-        return (
-            f"Your weakest subject is {lowest.subject.subject_name}.\n"
-            "Allocate additional daily practice time to this subject.\n"
-            "Revise concepts, solve practice papers, and track mistakes carefully.\n"
-            f"Current risk level: {risk_level}."
-        )
-
-    
-    # STRONG SUBJECT
-    
-    elif intent == "strong_subject":
-
-        return (
-            f"Your strongest subject is {highest.subject.subject_name} "
-            f"with {highest.total_marks} marks.\n"
-            "Continue maintaining this strong performance."
-        )
-
-    
-    # WEAK SUBJECT
-    
-    elif intent == "weak_subject":
-
-        return (
-            f"Your weakest subject is {lowest.subject.subject_name} "
-            f"with {lowest.total_marks} marks.\n"
-            "This subject should be your top priority."
-        )
-
-    
-    # MOTIVATION
-    
-    elif intent == "motivation":
-
-        if risk_level == "High":
-            return (
-                "Challenges are temporary.\n"
-                "With disciplined effort, improvement is absolutely possible.\n"
-                "Start today and stay consistent."
-            )
-        else:
-            return (
-                "You are capable of continuous improvement.\n"
-                "Consistency and discipline will take you to the next level."
-            )
-
-    
-    # DEFAULT
-    
-    else:
-        return (
-            "I can analyze your academic performance, assess risk levels, "
-            "suggest study plans, and provide improvement guidance."
-        )

@@ -8,10 +8,7 @@ function sendMessage() {
     const chatBox = document.getElementById("chat-box");
 
     // Show user message
-    const userMsg = document.createElement("div");
-    userMsg.classList.add("message", "user");
-    userMsg.innerText = userMessage;
-    chatBox.appendChild(userMsg);
+    addUserMessage(userMessage);
 
     inputField.value = "";
 
@@ -26,16 +23,46 @@ function sendMessage() {
     .then(response => response.json())
     .then(data => {
 
-        const botMsg = document.createElement("div");
-        botMsg.classList.add("message", "bot");
-        botMsg.innerText = data.reply;
-        chatBox.appendChild(botMsg);
+        const botReply = data.reply;
+
+        // show bot message
+        addBotMessage(botReply);
+
+        // save to local storage 
+        let chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
+
+        chatHistory.push({
+            user: userMessage,
+            bot: botReply
+        });
+
+        localStorage.setItem("chatHistory", JSON.stringify(chatHistory));
 
         chatBox.scrollTo({
             top: chatBox.scrollHeight,
             behavior: "smooth"
         });
     });
+}
+
+function addUserMessage(message){
+    const chatBox = document.getElementById("chat-box");
+
+    const userMsg = document.createElement("div");
+    userMsg.classList.add("message", "user");
+    userMsg.innerText = message;
+
+    chatBox.appendChild(userMsg);
+}
+
+function addBotMessage(message){
+    const chatBox = document.getElementById("chat-box");
+
+    const botMsg = document.createElement("div");
+    botMsg.classList.add("message", "bot");
+    botMsg.innerText = message;
+
+    chatBox.appendChild(botMsg);
 }
 
 function getCookie(name) {
@@ -55,7 +82,15 @@ function getCookie(name) {
 
 
 document.addEventListener("DOMContentLoaded", function () {
+
     const inputField = document.getElementById("user-input");
+
+    const chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
+
+    chatHistory.forEach(chat => {
+        addUserMessage(chat.user);
+        addBotMessage(chat.bot);
+    });
 
     inputField.addEventListener("keydown", function (event) {
         if (event.key === "Enter") {
