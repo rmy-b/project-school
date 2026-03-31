@@ -82,7 +82,15 @@ def manage_students(request):
                     )
 
                     joining_date = pd.to_datetime(
-                        row["joining_date"]).date()
+                        row["joining_date"],
+                        dayfirst=True,
+                        errors='coerce'
+                    )
+
+                    if pd.isna(joining_date):
+                        raise Exception("Invalid joining date")
+                    
+                    joining_date = joining_date.date()
                     
                     Student.objects.create(
                         user=user,

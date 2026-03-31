@@ -100,7 +100,7 @@
                 <strong>{{ request.user.username }}</strong><br>
                 <small>{{ request.user.role|title }}</small>
             </div>
-            <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+            <a href="{% url 'logout' %}" class="logout-btn" onclick="clearChat()">Logout</a>
         </div>
 
     </aside>

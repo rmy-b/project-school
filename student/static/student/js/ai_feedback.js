@@ -29,14 +29,14 @@ function sendMessage() {
         addBotMessage(botReply);
 
         // save to local storage 
-        let chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
+        let chatHistory = JSON.parse(sessionStorage.getItem("chatHistory")) || [];
 
         chatHistory.push({
             user: userMessage,
             bot: botReply
         });
 
-        localStorage.setItem("chatHistory", JSON.stringify(chatHistory));
+        sessionStorage.setItem("chatHistory", JSON.stringify(chatHistory));
 
         chatBox.scrollTo({
             top: chatBox.scrollHeight,
@@ -85,7 +85,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const inputField = document.getElementById("user-input");
 
-    const chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
+    const chatHistory = JSON.parse(sessionStorage.getItem("chatHistory")) || [];
 
     chatHistory.forEach(chat => {
         addUserMessage(chat.user);
@@ -99,3 +99,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+
+function clearChat(){
+    sessionStorage.removeItem("chatHistory");
+}
