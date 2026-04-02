@@ -30,29 +30,19 @@ def faculty_dashboard(request):
         "faculty": faculty,
         "incharge": incharge,
         "classes_handled": classes_handled,
+        "is_class_incharge": bool(incharge),
     }
 
     return render(request, "faculty/dashboard.html", context)
 
-#Marks Page
-# @login_required
-# def marks_page(request):
-#     user = request.user
-#     faculty = Faculty.objects.get(user=user)
-
-#     # Subjects & classes this faculty teaches
-#     assignments = FacultyAssignment.objects.filter(faculty=faculty)
-
-#     context = {
-#         "faculty": faculty,
-#         "assignments": assignments,
-#     }
-
-#     return render(request, "faculty/marks.html", context)
 @login_required
 def marks_page(request):
     faculty = Faculty.objects.get(user=request.user)
 
+    is_class_incharge = FacultyAssignment.objects.filter(
+    faculty=faculty,
+    is_class_incharge=True
+).exists()
     # All classes this teacher handles
     assignments = FacultyAssignment.objects.filter(faculty=faculty)
     exams = Exam.objects.all()
@@ -149,6 +139,7 @@ def marks_page(request):
         'selected_exam_id': selected_exam_id,
         'selected_class_id': selected_class_id,
         'selected_assignment': selected_assignment,
+         'is_class_incharge': is_class_incharge,
     }
 
     return render(request, 'faculty/marks.html', context)
@@ -156,7 +147,10 @@ def marks_page(request):
 @login_required
 def attendance_page(request):
     faculty = Faculty.objects.get(user=request.user)
-
+    is_class_incharge = FacultyAssignment.objects.filter(
+     faculty=faculty,
+     is_class_incharge=True
+).exists()
     # Check if this faculty is class incharge
     class_incharge = FacultyAssignment.objects.filter(
         faculty=faculty,
@@ -166,8 +160,10 @@ def attendance_page(request):
     # Not class teacher
     if not class_incharge:
         return render(request, 'faculty/attendance.html', {
-            'not_authorized': True
-        })
+         'faculty': faculty,
+        'not_authorized': True,
+        'is_class_incharge': is_class_incharge,
+    })
 
     # Class teacher
     class_obj = class_incharge.class_obj
@@ -255,7 +251,8 @@ def attendance_page(request):
         'absent_count': absent_count,
         'total_count': students.count(),
         'error_message': error_message,
-        'not_authorized': False
+        'not_authorized': False,
+        'is_class_incharge':is_class_incharge,
     }
 
     return render(request, 'faculty/attendance.html', context)
@@ -265,7 +262,11 @@ def attendance_page(request):
 
 def performance_view(request):
     faculty = Faculty.objects.get(user=request.user)
-
+    is_class_incharge = FacultyAssignment.objects.filter(
+    faculty=faculty,
+    is_class_incharge=True
+).exists()
+    latest_exam = Exam.objects.order_by('-id').first()
     # Only classes assigned to this faculty
     assignments = FacultyAssignment.objects.filter(faculty=faculty)
 
@@ -278,21 +279,22 @@ def performance_view(request):
     selected_class_id = request.GET.get("class")
 
     data = {
-        "classes": classes,
-        "selected_class_id": selected_class_id,
-    }
+         "faculty": faculty,
+         "classes": classes,
+         "selected_class_id": selected_class_id,
+         "is_class_incharge": is_class_incharge,
+}
 
     if selected_class_id:
         faculty_subjects = assignments.filter(
             class_obj_id=selected_class_id
         ).values_list('subject', flat=True)
-
         faculty_marks = Marks.objects.filter(
             student__class_obj_id=selected_class_id,
             student__section__in=assignments.values('section'),
-            subject__in=faculty_subjects
+            subject__in=faculty_subjects,
+            exam=latest_exam   
         )
-
         all_marks = Marks.objects.filter(
             student__class_obj_id=selected_class_id,
             student__section__in=assignments.values('section')
@@ -338,12 +340,15 @@ def performance_view(request):
             "predicted_pass_percent": predicted_pass_percent,
             "predicted_pass_students": predicted_pass_students,
             "total_students": total_students,
+            "is_class_incharge": is_class_incharge,
 })
 
     return render(request, "faculty/performance.html", data)
 
 
 from openpyxl import Workbook
+from openpyxl.styles import Font,Alignment,PatternFill
+from openpyxl.utils import get_column_letter
 from django.http import HttpResponse
 from django.utils import timezone
 import datetime
@@ -365,20 +370,18 @@ def generate_attendance_report(request):
 
     class_obj = class_incharge.class_obj
     section = class_incharge.section
+    from_date = request.POST.get("from_date")
+    to_date = request.POST.get("to_date")
 
-    duration = request.POST.get("duration")
-    today = timezone.now().date()
+    if not from_date or not to_date:
+       return HttpResponse("Please select both From and To dates")
 
-    if duration == "today":
-        start_date = today
-    elif duration == "2days":
-        start_date = today - datetime.timedelta(days=1)
-    elif duration == "3days":
-        start_date = today - datetime.timedelta(days=2)
-    elif duration == "1month":
-        start_date = today - datetime.timedelta(days=30)
-    else:
-        start_date = today
+    start_date = datetime.datetime.strptime(from_date, "%Y-%m-%d").date()
+    end_date = datetime.datetime.strptime(to_date, "%Y-%m-%d").date()
+
+# Safety check
+    if start_date > end_date:
+      return HttpResponse("From date cannot be greater than To date")
 
     students = Student.objects.filter(class_obj=class_obj, section=section)
 
@@ -393,7 +396,7 @@ def generate_attendance_report(request):
     # ---- CREATE DATE LIST ----
     date_list = []
     d = start_date
-    while d <= today:
+    while d <= end_date:
         date_list.append(d)
         d += datetime.timedelta(days=1)
 
@@ -402,19 +405,52 @@ def generate_attendance_report(request):
     ws = wb.active
     ws.title = "Attendance Report"
 
-    # HEADER (UNCHANGED)
-    ws.append(["Class", f"{class_obj.class_name} - {section.section_name}"])
-    ws.append(["From", str(start_date)])
-    ws.append(["To", str(today)] )
-    ws.append([])
+    # ===== STYLES =====
+    title_font = Font(size=14, bold=True)
+    header_font = Font(bold=True, color="FFFFFF")
+    bold_font = Font(bold=True)
 
-    # TABLE HEADER
-    header = ["Roll No", "Name"]
-    for d in date_list:
-        header.append(str(d))
+    center = Alignment(horizontal="center", vertical="center")
+
+    yellow_fill = PatternFill("solid", start_color="D4A017")
+    header_fill = PatternFill("solid", start_color="1F4E78")
+    green_fill = PatternFill("solid", start_color="C6EFCE")
+    red_fill = PatternFill("solid", start_color="FFC7CE")
+    grey_fill = PatternFill("solid", start_color="E7E6E6")
+
+    # ===== TITLE =====
+    last_col = len(date_list) + 2
+    ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=last_col)
+    ws["A1"] = "ATTENDANCE REPORT"
+    ws["A1"].font = title_font
+    ws["A1"].alignment = center
+    ws["A1"].fill = yellow_fill
+
+    # ===== CLASS INFO =====
+    ws["A2"] = "Class"
+    ws["B2"] = f"{class_obj.class_name} - {section.section_name}"
+
+    ws["A3"] = "From"
+    ws["B3"] = str(start_date)
+
+    ws["A4"] = "To"
+    ws["B4"] = str(end_date)
+
+    for row in range(2, 5):
+        ws[f"A{row}"].font = bold_font
+
+    # ===== HEADER =====
+    header_row = 6
+    header = ["Roll No", "Name"] + [str(d) for d in date_list]
     ws.append(header)
 
-    # DAILY COUNTS
+    for col_num in range(1, len(header) + 1):
+        cell = ws.cell(row=header_row, column=col_num)
+        cell.font = header_font
+        cell.fill = header_fill
+        cell.alignment = center
+
+    # ===== STUDENT DATA + DAILY COUNTS =====
     daily_present = {d: 0 for d in date_list}
     daily_absent = {d: 0 for d in date_list}
 
@@ -422,9 +458,7 @@ def generate_attendance_report(request):
         row = [student.roll_no, student.name]
 
         for d in date_list:
-
-            # ---- SUNDAY = HOLIDAY ----
-            if d.weekday() == 6:  # Sunday
+            if d.weekday() == 6:
                 row.append("Holiday")
                 continue
 
@@ -437,11 +471,11 @@ def generate_attendance_report(request):
                 row.append("Absent")
                 daily_absent[d] += 1
             else:
-                row.append("")  # no data (do not force Absent)
+                row.append("")
 
         ws.append(row)
 
-    # ---- TOTALS PER DAY ----
+    # ===== TOTAL ROWS =====
     ws.append([])
     total_row = ["Total", ""]
     present_row = ["Present", ""]
@@ -456,6 +490,40 @@ def generate_attendance_report(request):
     ws.append(present_row)
     ws.append(absent_row)
 
+    # ===== STYLE TOTALS =====
+    for row in range(ws.max_row - 2, ws.max_row + 1):
+        for col in range(1, ws.max_column + 1):
+            cell = ws.cell(row=row, column=col)
+            cell.font = bold_font
+            cell.alignment = center
+            cell.fill = grey_fill
+
+    # ===== CELL ALIGNMENT + COLORS =====
+    for row in ws.iter_rows(min_row=7, max_row=ws.max_row - 4):
+        for cell in row:
+            cell.alignment = center
+
+            if cell.value == "Present":
+                cell.fill = green_fill
+            elif cell.value == "Absent":
+                cell.fill = red_fill
+            elif cell.value == "Holiday":
+                cell.fill = grey_fill
+
+    # ===== AUTO WIDTH =====
+    for column in range(1, ws.max_column + 1):
+        max_length = 0
+        column_letter = get_column_letter(column)
+
+        for row in range(1, ws.max_row + 1):
+            cell = ws.cell(row=row, column=column)
+
+            if cell.value:
+                max_length = max(max_length, len(str(cell.value)))
+
+        ws.column_dimensions[column_letter].width = max_length + 3
+
+        ws.column_dimensions[column_letter].width = max_length + 2
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )

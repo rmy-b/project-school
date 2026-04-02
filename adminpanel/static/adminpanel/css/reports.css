@@ -62,7 +62,7 @@ border-radius:10px;
 }
 
 .graph-card canvas{
-    height:260px !important;
+    height:300px !important;
     max-height:260px;
 }
 

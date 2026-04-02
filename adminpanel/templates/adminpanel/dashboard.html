@@ -23,7 +23,7 @@
 <div class="card-icon" style="background:#e6f7ee;">
    <img src="{% static  'adminpanel/icons/user-yel.svg' %} " >
 </div>
-<a href="#/adminpanel/manage-students" class="btn">Manage Students</a>
+<a href="/adminpanel/students" class="btn">Manage Students</a>
 </div>
 
 <div class="card">
@@ -41,7 +41,7 @@
 <div class="card-icon" style="background:#e6f7ee;">
    <img src="{% static  'adminpanel/icons/class-green.svg' %} " >
 </div>
-<a href="#/adminpanel/classes" class="btn">Manage Classes</a>
+<a href="/adminpanel/classes" class="btn">Manage Classes</a>
 </div>
 
 <div class="card">
@@ -75,6 +75,14 @@
 <div class="card-icon" style="background:#e6f7ee;">
    <img src="{% static  'adminpanel/icons/triangle-alert.svg' %} " >
 </div>
+</div>
+
+<div class="card">
+    <h4>AI Predicted Overall Pass %</h4>
+    <h2>{{ predicted_school_pass }}%</h2>
+    <div class="card-icon" style="background:#e6f7ee;">
+       <img src="{% static 'adminpanel/icons/predict copy.svg' %}">
+    </div>
 </div>
 
 </div>

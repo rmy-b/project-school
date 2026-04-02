@@ -35,12 +35,13 @@
                     </a>
                 </li>
 
-                <li class="{% if request.resolver_match.url_name == 'attendance_page' %}active{% endif %}">
-                    <a href="{% url 'attendance_page' %}">
-                        <img src="{% static 'faculty/icons/calendar-black.svg' %}" class="icon"> Attendance
-                    </a>
-                </li>
-
+                {% if is_class_incharge %}
+            <li class="{% if request.resolver_match.url_name == 'attendance_page' %}active{% endif %}">
+                 <a href="{% url 'attendance_page' %}">
+                 <img src="{% static 'faculty/icons/calendar-black.svg' %}" class="icon"> Attendance
+                </a>
+            </li>
+{% endif %}
                 <li class="{% if request.resolver_match.url_name == 'performance_view' %}active{% endif %}">
                     <a href="{% url 'performance_view' %}">
                     <img src="{% static 'faculty/icons/chart-line black.svg' %}" class="icon"> Performance

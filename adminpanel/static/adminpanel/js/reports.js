@@ -6,7 +6,6 @@ document.querySelector(".view-btn").onclick = function () {
 };
 
 
-
 // -----------------------------
 // Pass Rate Chart
 // -----------------------------
@@ -77,53 +76,47 @@ max:100
 const riskLabels = riskChartData.map(item => item.subject);
 const riskValues = riskChartData.map(item => item.risk);
 new Chart(document.getElementById("riskChart"), {
+    type: 'line',
 
+    data: {
+        labels: riskLabels,
+        datasets: [{
+            label: "At Risk Students",
+            data: riskValues,
+            backgroundColor: "#c47a00",
+            hoverBackgroundColor: "#c47a00",
+            borderRadius: 4,
+            tension: 0.5
+        }]
+    },
 
-type:'line',
-options:{
-indexAxis:'x'
-},
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'x',
 
-data:{
+        animation: {
+            duration: 1200,
+            easing: 'easeOutQuart'
+        },
 
-labels:riskLabels,
+        plugins: {
+            legend: { display: false },
 
-datasets:[{
+            tooltip: {
+                callbacks: {
+                    label: function (context) {
+                        return context.parsed.y + " students at risk";
+                    }
+                }
+            }
+        },
 
-label:"At Risk Students",
-data:riskValues,
-
-backgroundColor:"#c47a00",
-hoverBackgroundColor:"#c47a00",
-borderRadius:4,
-tension:0.5
-
-}]
-
-},
-
-options:{
-responsive:true,
-maintainAspectRatio:false,
-
-animation:{
-duration:1200,
-easing:'easeOutQuart'
-},
-
-plugins:{
-legend:{display:false},
-
-tooltip:{
-callbacks:{
-label:function(context){
-return context.parsed.y + " students at risk";
-}
-}
-}
-
-}
-
-}
-
+        scales: {
+            y: {
+                beginAtZero: true,
+                max:8,
+            }
+        }
+    }
 });

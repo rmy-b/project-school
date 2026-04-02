@@ -37,12 +37,14 @@
         </a>
     </div>
 
+    {% if is_class_incharge %}
     <div class="action-card">
         <img src="{% static 'faculty/icons/calendar.svg' %}" class="card-icon">
         <h3>Attendance</h3>
         <a href="{% url 'attendance_page' %}">
         <button>Mark Attendance</button></a>
     </div>
+    {% endif %}
 
     <div class="action-card">
         <img src="{% static 'faculty/icons/chart-line.svg' %}" class="card-icon">
