@@ -58,7 +58,7 @@ Section {{ s.section_name }}
 <div class="report-card">
 <h4>Overall Pass Rate</h4>
 <h2>{{ overall_pass_rate }}%</h2>
-<div class="card-icon" style="background:#e6f7ee;">
+<div class="card-icon" >
    <img src="{% static  'adminpanel/icons/tick.svg' %} " >
 </div>
 </div>
@@ -66,16 +66,16 @@ Section {{ s.section_name }}
 <div class="report-card">
 <h4>At-Risk Students</h4>
 <h2>{{ risk_count }}</h2>
-<div class="card-icon" style="background:#e6f7ee;">
+<div class="card-icon">
    <img src="{% static  'adminpanel/icons/triangle-alert.svg' %} " >
    </div>
 <button class="view-btn" onclick="scrollToRisk()">View Students</button>
 </div>
 
 <div class="report-card">
-<h4>Predicted Pass Percentage</h4>
+<h4>Predicted Pass Percentage (for class)</h4>
 <h2>{{predicted_pass_rate}}%</h2>
-<div class="card-icon" style="background:#e6f7ee;">
+<div class="card-icon" >
    <img src="{% static  'adminpanel/icons/predict.svg' %} " >
 </div>
 </div>

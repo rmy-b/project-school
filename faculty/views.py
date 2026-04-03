@@ -4,6 +4,7 @@ from details.models import Faculty, FacultyAssignment,Student, Marks, Exam, Atte
 import datetime
 from django.db.models import Avg
 from faculty.ML.predictor import predict_pass_percentage
+from faculty.ML.faculty_cluster import cluster_students
 
 
 @login_required
@@ -322,6 +323,47 @@ def performance_view(request):
             student__class_obj_id=selected_class_id,status='P').count()
 
         attendance_percent = (present_count / total_classes * 100) if total_classes > 0 else 0
+        # -----------------------------
+        # K-MEANS STUDENT CLUSTERING
+
+        student_cluster_data = []
+
+        class_students = Student.objects.filter(
+            class_obj_id=selected_class_id
+        )
+
+        for student in class_students:
+        # ONLY faculty handled subjects
+            avg_marks = Marks.objects.filter(
+             student=student,
+             subject__in=faculty_subjects,
+             exam=latest_exam
+            ).aggregate(avg=Avg("total_marks"))["avg"] or 0
+
+            total_days = Attendance.objects.filter(student=student).count()
+            present_days = Attendance.objects.filter(
+                student=student,
+                status="P"
+            ).count()
+
+            attendance = (present_days / total_days * 100) if total_days > 0 else 0
+
+            student_cluster_data.append({
+                "student": student,
+                "avg_marks": round(avg_marks, 2),
+                "attendance": round(attendance, 2)
+        })
+
+        cluster_result = cluster_students(student_cluster_data)
+        selected_cluster = request.GET.get("cluster")
+
+        filtered_cluster_students = cluster_result["clusters"]
+
+        if selected_cluster:
+            filtered_cluster_students = [
+                s for s in filtered_cluster_students
+                if s["cluster"] == selected_cluster
+            ]
 
         # ML Prediction
         predicted_pass_percent = predict_pass_percentage(class_avg, attendance_percent)
@@ -341,6 +383,12 @@ def performance_view(request):
             "predicted_pass_students": predicted_pass_students,
             "total_students": total_students,
             "is_class_incharge": is_class_incharge,
+            "cluster_counts": cluster_result["counts"],
+            "cluster_students": filtered_cluster_students,
+            "selected_cluster": selected_cluster,
+            "top_count": cluster_result["counts"].get("Top Performers", 0),
+            "avg_count": cluster_result["counts"].get("Average Students", 0),
+            "needs_count": cluster_result["counts"].get("Needs Attention", 0),
 })
 
     return render(request, "faculty/performance.html", data)

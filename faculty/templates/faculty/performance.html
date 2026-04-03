@@ -50,43 +50,123 @@
 </div>
 </div>
 
-<!-- CHART -->
-<h3>Subject-wise Average</h3>
 
-<div id="chartData"
-     data-labels='[{% for s in subject_avg %}"{{ s.subject__subject_name }}"{% if not forloop.last %},{% endif %}{% endfor %}]'
-     data-values='[{% for s in subject_avg %}{{ s.avg }}{% if not forloop.last %},{% endif %}{% endfor %}]'>
+<!-- ========================= -->
+<!-- CHART ROW -->
+<!-- ========================= -->
+<div class="chart-row">
+
+    <!-- SUBJECT GRAPH -->
+    <div class="chart-card">
+        <h3>Subject-wise Average</h3>
+
+        <div id="chartData"
+             data-labels='[{% for s in subject_avg %}"{{ s.subject__subject_name }}"{% if not forloop.last %},{% endif %}{% endfor %}]'
+             data-values='[{% for s in subject_avg %}{{ s.avg }}{% if not forloop.last %},{% endif %}{% endfor %}]'>
+        </div>
+
+        <canvas id="subjectChart"></canvas>
+    </div>
+
+    <!-- PIE CHART -->
+    <div class="chart-card small-chart">
+        <h3>Student Cluster Distribution</h3>
+
+        <div id="clusterChartData"
+             data-top="{{ top_count }}"
+             data-average="{{ avg_count }}"
+             data-needs="{{ needs_count }}">
+        </div>
+
+        <canvas id="clusterPieChart"></canvas>
+    </div>
+
 </div>
 
-<canvas id="subjectChart"></canvas>
 
-<!-- RISK TABLE -->
-<h3 id="riskSection">At-Risk Students</h3>
+<!-- ========================= -->
+<!-- CLUSTER FILTER + TABLE -->
+<!-- ========================= -->
+<div class="cluster-card">
+    <h3>Student Performance Clusters</h3>
 
+<form method="get" class="cluster-filter-form">
+    <input type="hidden" name="class" value="{{ selected_class_id }}">
+
+    <label>Filter by Cluster:</label>
+    <select name="cluster" onchange="this.form.submit()">
+        <option value="" {% if not selected_cluster %}selected{% endif %}>All</option>
+        <option value="Top Performers" {% if selected_cluster == "Top Performers" %}selected{% endif %}>
+            Top Performers
+        </option>
+        <option value="Average Students" {% if selected_cluster == "Average Students" %}selected{% endif %}>
+            Average Students
+        </option>
+        <option value="Needs Attention" {% if selected_cluster == "Needs Attention" %}selected{% endif %}>
+            Needs Attention
+        </option>
+    </select>
+</form>    
 <table>
-<thead>
-<tr>
-<th>Roll No</th>
-<th>Name</th>
-<th>Subject</th>
-<th>Mark</th>
-</tr>
-</thead>
-<tbody>
-{% for m in at_risk %}
-<tr>
-<td>{{ m.student.roll_no }}</td>
-<td>{{ m.student.name }}</td>
-<td>{{ m.subject.subject_name }}</td>
-<td>{{ m.total_marks }}</td>
-</tr>
-{% empty %}
-<tr>
-<td colspan="4">No at-risk students</td>
-</tr>
-{% endfor %}
-</tbody>
-</table>
+        <thead>
+            <tr>
+                <th>Roll No</th>
+                <th>Name</th>
+                <th>Average</th>
+                <th>Attendance</th>
+                <th>Cluster</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in cluster_students %}
+            <tr>
+                <td>{{ s.student.roll_no }}</td>
+                <td>{{ s.student.name }}</td>
+                <td>{{ s.avg_marks }}</td>
+                <td>{{ s.attendance }}%</td>
+                <td>{{ s.cluster }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No students found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+<!-- ========================= -->
+<!-- RISK TABLE -->
+<!-- ========================= -->
+<div class="risk-card">
+    <h3 id="riskSection">At-Risk Students</h3>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Roll No</th>
+                <th>Name</th>
+                <th>Subject</th>
+                <th>Mark</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for m in at_risk %}
+            <tr>
+                <td>{{ m.student.roll_no }}</td>
+                <td>{{ m.student.name }}</td>
+                <td>{{ m.subject.subject_name }}</td>
+                <td>{{ m.total_marks }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">No at-risk students</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
 {% endif %}
 {% endblock %}
